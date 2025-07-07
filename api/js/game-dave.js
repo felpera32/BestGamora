@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/diver/Capa.jpg",
+        "../src/Capas/diver/capa.jpg",
         
         "../src/Capas/diver/gameplay1.jpg",
 
