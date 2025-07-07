@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/wukong/capa.jpg",
+        "../src/Capas/wukong/Capa.jpg",
         
         "../src/Capas/wukong/gameplay1.jpg",
 

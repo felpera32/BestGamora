@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/reddead/capa.jpg",
+        "../src/Capas/reddead/Capa.jpg",
         
         "../src/Capas/reddead/gameplay1.jpg",
 

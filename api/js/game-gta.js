@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/gta/capa.jpg",
+        "../src/Capas/gta/Capa.jpg",
         
         "../src/Capas/gta/gameplay1.jpg",
 

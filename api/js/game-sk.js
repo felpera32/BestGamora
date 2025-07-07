@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/sekiro/capa.jpg",
+        "../src/Capas/sekiro/Capa.jpg",
         
         "../src/Capas/sekiro/gameplay1.jpg",
 

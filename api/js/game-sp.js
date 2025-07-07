@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/spiderman/capa.jpg",
+        "../src/Capas/spiderman/Capa.jpg",
         
         "../src/Capas/spiderman/gameplay1.jpg",
 

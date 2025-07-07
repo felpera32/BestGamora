@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/moonlighter/capa.jpg",
+        "../src/Capas/moonlighter/Capa.jpg",
         
         "../src/Capas/moonlighter/gameplay1.jpg",
 

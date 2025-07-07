@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/bg3/capa.jpg",
+        "../src/Capas/bg3/Capa.jpg",
         
         "../src/Capas/bg3/gameplay1.jpg",
 

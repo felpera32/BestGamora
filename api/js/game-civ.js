@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Gerenciamento de imagens
     let images = [
-        "../src/Capas/civ/capa.jpg",
+        "../src/Capas/civ/Capa.jpg",
         "../src/Capas/civ/gameplay1.jpg",
         "../src/Capas/civ/gameplay2.jpg",
         "../src/Capas/civ/gameplay3.jpg",
