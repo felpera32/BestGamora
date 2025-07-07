@@ -29,11 +29,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Gerenciamento de imagens
     let images = [
-        "../src/Capas/civ/Capa.jpg",
-        "../src/Capas/civ/gameplay1.jpg",
-        "../src/Capas/civ/gameplay2.jpg",
-        "../src/Capas/civ/gameplay3.jpg",
-        "../src/Capas/civ/gameplay4.jpg"
+        "../src/Capas/Civ/capa.jpg",
+        "../src/Capas/Civ/gameplay1.jpg",
+        "../src/Capas/Civ/gameplay2.jpg",
+        "../src/Capas/Civ/gameplay3.jpg",
+        "../src/Capas/Civ/gameplay4.jpg"
     ];
 
     let currentIndex = 0;
