@@ -6,22 +6,9 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
     header('Location: ../login.php');
     exit;
 }
-
-if (!isset($_SESSION['biblioteca'])) {
-    $_SESSION['biblioteca'] = [];
-}
-
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'gamoraloja');
-
-include "../navbar/GameNav.php";
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
