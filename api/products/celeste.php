@@ -26,12 +26,12 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/celeste/capa.jpg" alt="Celeste">
+                <img id="mainImage" src="../src/Capas/celeste/Capa.jpg" alt="Celeste">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/celeste/capa.jpg" alt="Thumbnail 1"
-                    onclick="changeImage('../src/Capas/celeste/capa.jpg', this)">
+                <img class="thumb active" src="../src/Capas/celeste/Capa.jpg" alt="Thumbnail 1"
+                    onclick="changeImage('../src/Capas/celeste/Capa.jpg', this)">
                 <img class="thumb" src="../src/Capas/celeste/gameplay1.jpg" alt="Thumbnail 2"
                     onclick="changeImage('../src/Capas/celeste/gameplay1.jpg', this)">
                 <img class="thumb" src="../src/Capas/celeste/gameplay2.jpg" alt="Thumbnail 3"
