@@ -42,7 +42,7 @@ include "../navbar/GameNav.php";
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/civ/Capa.jpg" onclick="changeImage('../src/Capas/civ/capa.jpg', this)">
+                <img class="thumb active" src="../src/Capas/civ/capa.jpg" onclick="changeImage('../src/Capas/civ/capa.jpg', this)">
                 <img class="thumb" src="../src/Capas/civ/gameplay1.jpg" onclick="changeImage('../src/Capas/civ/gameplay1.jpg', this)">
                 <img class="thumb" src="../src/Capas/civ/gameplay2.jpg" onclick="changeImage('../src/Capas/civ/gameplay2.jpg', this)">
                 <img class="thumb" src="../src/Capas/civ/gameplay3.jpg" onclick="changeImage('../src/Capas/civ/gameplay3.jpg', this)">

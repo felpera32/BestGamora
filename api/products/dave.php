@@ -37,11 +37,11 @@ include "../navbar/GameNav.php";
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/diver/Capa.jpg" alt="Dave the Diver">
+                <img id="mainImage" src="../src/Capas/diver/capa.jpg" alt="Dave the Diver">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/diver/Capa.jpg" onclick="changeImage('../src/Capas/diver/capa.jpg', this)">
+                <img class="thumb active" src="../src/Capas/diver/capa.jpg" onclick="changeImage('../src/Capas/diver/capa.jpg', this)">
                 <img class="thumb" src="../src/Capas/diver/gameplay1.jpg" onclick="changeImage('../src/Capas/diver/gameplay1.jpg', this)">
                 <img class="thumb" src="../src/Capas/diver/gameplay2.jpg" onclick="changeImage('../src/Capas/diver/gameplay2.jpg', this)">
                 <img class="thumb" src="../src/Capas/diver/gameplay3.jpg" onclick="changeImage('../src/Capas/diver/gameplay3.jpg', this)">
