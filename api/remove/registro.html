@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/registro.css">
+    <!-- Script carregado com defer para garantir que execute após o DOM estar completo -->
+    <script src="js/registro.js" defer></script>
+    <title>Cadastro - GAMORA</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .container {
+            margin-top: 7%;
+        }
+        
+        .selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <a href="index.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="linkvoltar" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" id="ct">
+        <h1 class="tracking-in-expand">GAMORA</h1>
+        <h1 class="tracking-in-expand">Registrar</h1>
+
+        <div id="buttons">
+            <button onclick="showInputs('anunciante', event)">Sou Anunciante<br>Irei vender</button>
+            <button onclick="showInputs('cliente', event)">Sou Cliente<br>Irei comprar</button>
+        </div>
+
+        <div class="form-container hidden" id="inputFields">
+            <form action="registro.php" method="post">
+                <!-- Campo oculto para o tipo de usuário -->
+                <input type="hidden" name="userType" id="userType" value="">
+                
+                <input type="text" name="nickname" placeholder="Nome" required>
+                <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
+                <input type="tel" name="phone" id="phone" placeholder="(XX) XXXXX-XXXX" required>
+                <input type="email" name="email" placeholder="E-Mail" required>
+                <input type="password" name="senha" placeholder="Senha" minlength="6" required 
+                    title="A senha deve ter pelo menos 6 caracteres, incluindo letras e números.">
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+        
+        <p>Já tem uma conta? <a href="login.php">Entrar</a></p>
+    </div>
+</body>
+</html>

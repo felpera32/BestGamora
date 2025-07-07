@@ -1,0 +1,482 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #081f4d;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    min-height: 100vh;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+/* Remove espaçamento da navbar */
+nav,
+.navbar {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.price-validation-info {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.price-validation-info h4 {
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.trade-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    align-items: flex-start;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.user-section {
+    flex: 0 0 350px;
+    width: 350px;
+    max-width: 350px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    height: fit-content;
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.user-name {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.user-selector {
+    margin-bottom: 15px;
+}
+
+.user-selector select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+}
+
+.user-selector select option {
+    background: #081f4d;
+    color: white;
+}
+
+.game-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.game-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.game-item.selected {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.2);
+}
+
+.game-item.invalid {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.2);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.game-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.game-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    text-align: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.game-image.no-image {
+    background: linear-gradient(45deg, #333, #555);
+    color: #ccc;
+}
+
+.game-info {
+    flex: 1;
+    min-width: 0;
+    /* Permite que o texto seja truncado se necessário */
+}
+
+.game-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.game-price {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.price-range {
+    font-size: 10px;
+    color: #ccc;
+    margin-top: 2px;
+    font-style: italic;
+    line-height: 1.1;
+}
+
+.arrow-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 80px;
+    flex-shrink: 0;
+}
+
+.arrow {
+    font-size: 30px;
+    color: white;
+}
+
+.value-section {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.value-label {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.value-amount {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.trade-status {
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 12px;
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+.trade-status.valid {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+.trade-status.invalid {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+
+.confirm-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 30px auto;
+    display: block;
+}
+
+.confirm-button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.confirm-button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.no-games {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 30px 20px;
+    font-size: 16px;
+}
+
+/* Toast notification styles */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-in-out;
+    max-width: 350px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-notification.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.toast-notification.error {
+    background-color: #f44336;
+    color: white;
+}
+
+.toast-notification.success::before {
+    content: "✓";
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.toast-notification.error::before {
+    content: "⚠";
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Animações para a troca de jogos */
+.game-item.trocando {
+    animation: fadeOutScale 1.5s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes fadeOutScale {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.game-item.novo-jogo {
+    animation: fadeInScale 1.5s ease-in-out;
+    border: 2px solid #FFD700;
+    background: rgba(255, 215, 0, 0.1);
+    position: relative;
+    overflow: visible;
+}
+
+.game-item.novo-jogo::before {
+    content: "NOVO!";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #FFD700;
+    color: #081f4d;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.arrow.animando-troca {
+    animation: arrowPulse 1.5s ease-in-out;
+    color: #4CAF50;
+}
+
+@keyframes arrowPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        color: white;
+    }
+
+    25% {
+        transform: scale(1.3);
+        color: #4CAF50;
+    }
+
+    50% {
+        transform: scale(1.1);
+        color: #FFD700;
+    }
+
+    75% {
+        transform: scale(1.3);
+        color: #4CAF50;
+    }
+}
+
+/* Efeito de brilho durante a troca */
+.trade-container.trocando {
+    position: relative;
+}
+
+.trade-container.trocando::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    pointer-events: none;
+    animation: shine 1.5s ease-in-out;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .trade-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .arrow-section {
+        flex-direction: row;
+        margin-top: 0;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+    }
+
+    .user-section {
+        flex: none;
+        width: 100%;
+        max-width: 400px;
+    }
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo: Celeste</title>
+    <link rel="stylesheet" href="/css/games.css">
+    <script src="js/games.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">GM</div>
+            <ul>
+                <li><a style="text-decoration: none;" href="#">LOJA</a></li>
+                <li><a style="text-decoration: none;" href="#">BIBLIOTECA</a></li>
+            </ul>
+            <div class="search-container">
+                <input type="text" placeholder="Pesquisar...">
+                <button>Buscar</button>
+            </div>
+
+            <button class="cart" id="cart"><img src="src/Capas/cart.png" alt="cart"></button>
+            <?php
+          session_start();
+          if (isset($_SESSION['clientes'])) {
+            // Obtém a foto do usuário ou define o padrão
+            $fotoPerfil = !empty($_SESSION['clientes']['foto']) ? $_SESSION['clientes']['foto'] : 'uploads/default.png';
+            echo '<img src="' . $fotoPerfil . '" alt="Perfil" class="perfil-foto" id="foto-perfil">';
+          } else {
+            echo '<button class="entrar" onclick="entrarpag()" id="enter">Entrar</button>';
+          }
+    
+          ?>
+
+
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="slider">
+            <button class="nav prev" id="prev">&#10094;</button>
+            <img id="mainImage" src="/src/Capas/Celeste.jpg" alt="Main Image">
+            <button class="nav next" id="next">&#10095;</button>
+        </div>
+        <div class="thumbnails">
+            <img class="thumb" src="/src/Capas/celestegameplay.jpg" alt="Thumbnail 1" onclick="changeImage('/src/Capas/celestegameplay.jpg')">
+            <img class="thumb" src="/src/Capas/celestegameplay2.jpg" alt="Thumbnail 2" onclick="changeImage('/src/Capas/celestegameplay2.jpg')">
+            <img class="thumb" src="/src/Capas/celestegameplay3.jpg" alt="Thumbnail 3" onclick="changeImage('/src/Capas/celestegameplay3.jpg')">
+            <img class="thumb" src="/src/Capas/celestegameplay4.jpg" alt="Thumbnail 4" onclick="changeImage('/src/Capas/celestegameplay4.jpg')">
+        </div>
+
+
+        <div class="game-card">
+
+            <h1>Celeste</h1>
+            <p>Desenvolvedor: <strong>Maddy Makes Games</strong></p>
+            <p class="price">R$ 40,00</p>
+            <div class="button-container">
+                <button class="add-to-cart">Adicionar ao Carrinho</button>
+                <button class="favorite" id="favorite-button">
+                    <span class="coracao" id="coracao">&#10084; FAVORITAR</span>
+                </button>
+            </div>
+        </div>
+
+
+
+    </div>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+            var bt = document.getElementById("favorite-button");
+
+            bt.addEventListener("click", function () {
+                bt.classList.toggle("white");
+                bt.classList.toggle("red");
+            });
+        });
+
+
+
+
+
+
+
+        let images = [
+            "/src/Capas/celestegameplay.jpg",
+            "/src/Capas/celestegameplay2.jpg",
+            "/src/Capas/celestegameplay3.jpg",
+            "/src/Capas/celestegameplay4.jpg"
+        ];
+        let currentIndex = 0;
+
+        function updateImage() {
+            document.getElementById('mainImage').src = images[currentIndex];
+        }
+
+        document.getElementById('next').onclick = function() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateImage();
+        };
+
+        document.getElementById('prev').onclick = function() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateImage();
+        };
+
+        function changeImage(src) {
+            document.getElementById('mainImage').src = src;
+            currentIndex = images.indexOf(src);
+            if (currentIndex === -1) {
+                currentIndex = 0; // Garante que não quebre a navegação
+            }
+        }
+    </script>
+
+
+    </script>
+</body>
+
+</html>
