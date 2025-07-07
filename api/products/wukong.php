@@ -1,85 +1,64 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    header('Location: ../login.php');
+    exit;
+}
+
+if (!isset($_SESSION['biblioteca'])) {
+    $_SESSION['biblioteca'] = [];
+}
+
+include "../connect.php";
+
+include "../navbar/GameNav.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wukong</title>
+    <title>Black Myth: Wukong</title>
     <link rel="stylesheet" href="../css/games.css">
     <script src="../js/game-wk.js"></script>
 </head>
 
 <body>
-    <header>
-    <?php 
-
-
-        session_start();
-
-        if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
-            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
-            header('Location: ../login.php');
-            exit;
-        }
-
-        if (!isset($_SESSION['biblioteca'])) {
-            $_SESSION['biblioteca'] = [];
-        }
-
-        $bibliotecaVazia = empty($_SESSION['biblioteca']);
-
-        define('DB_HOST', 'localhost');
-        define('DB_USER', 'root');
-        define('DB_PASS', '');
-        define('DB_NAME', 'gamoraloja');
-
-         include "../navbar/GameNav.php";
-    ?>
-    </header>
-
     <div class="main-container">
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/wukong/capa.avif" alt="red dead">
+                <img id="mainImage" src="../src/Capas/wukong/capa.avif" alt="Black Myth: Wukong">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/wukong/capa.avif" alt="Thumbnail 1"
+                <img class="thumb active" src="../src/Capas/wukong/capa.avif" alt="Capa"
                     onclick="changeImage('../src/Capas/wukong/capa.avif', this)">
-
-                <img class="thumb" src="../src/Capas/wukong/gameplay1.jpg" alt="Thumbnail 1"
+                <img class="thumb" src="../src/Capas/wukong/gameplay1.jpg" alt="Gameplay 1"
                     onclick="changeImage('../src/Capas/wukong/gameplay1.jpg', this)">
-
-
-                <img class="thumb" src="../src/Capas/wukong/gameplay2.jpg" alt="Thumbnail 2"
+                <img class="thumb" src="../src/Capas/wukong/gameplay2.jpg" alt="Gameplay 2"
                     onclick="changeImage('../src/Capas/wukong/gameplay2.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/wukong/gameplay3.jpg" alt="Thumbnail 3"
+                <img class="thumb" src="../src/Capas/wukong/gameplay3.jpg" alt="Gameplay 3"
                     onclick="changeImage('../src/Capas/wukong/gameplay3.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/wukong/gameplay4.jpg" alt="Thumbnail 4"
+                <img class="thumb" src="../src/Capas/wukong/gameplay4.jpg" alt="Gameplay 4"
                     onclick="changeImage('../src/Capas/wukong/gameplay4.jpg', this)">
-
             </div>
         </div>
 
         <div class="right-column">
             <div class="game-info">
-                <h1>Black Myth: Wukong
-
-                </h1>
-                <p>Desenvolvedor: <strong>
-                        Game Science</strong></p>
+                <h1>Black Myth: Wukong</h1>
+                <p>Desenvolvedor: <strong>Game Science</strong></p>
                 <p class="price">R$ 199,00</p>
             </div>
             <div class="button-container">
                 <button class="favorite" id="favorite-button">
                     <span class="coracao" id="coracao">FAVORITAR</span>
                 </button>
-
                 <button class="add-to-cart">Adicionar ao Carrinho</button>
-
             </div>
         </div>
     </div>
@@ -98,11 +77,9 @@
                     const productDetails = {
                         id: 19,
                         name: 'Black Myth: Wukong',
-                        price: 199.99,
+                        price: 199.00,
                         quantity: 1
                     };
-
-                    console.log('Enviando dados:', productDetails);
 
                     fetch('../add_cart.php', {
                         method: 'POST',
@@ -118,8 +95,6 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Resposta do servidor:', data);
-
                             if (data.success) {
                                 addToCartButton.classList.add('success');
                                 addToCartButton.textContent = 'Adicionado!';
@@ -149,8 +124,6 @@
         });
     </script>
 
-
-
     <style>
         .add-to-cart {
             background-color: #28a745;
@@ -162,8 +135,6 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .add-to-cart:hover {
@@ -177,7 +148,6 @@
 
         .add-to-cart.success {
             background-color: #218838;
-            color: white;
         }
 
         .add-to-cart.error {
@@ -186,26 +156,9 @@
         }
 
         @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: translateX(-5px);
-            }
-
-            20%,
-            40%,
-            60%,
-            80% {
-                transform: translateX(5px);
-            }
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .perfil-foto {
@@ -217,8 +170,6 @@
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
         }
     </style>
-
-
 </body>
 
 </html>

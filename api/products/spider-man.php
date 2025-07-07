@@ -1,3 +1,23 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    header('Location: ../login.php');
+    exit;
+}
+
+if (!isset($_SESSION['biblioteca'])) {
+    $_SESSION['biblioteca'] = [];
+}
+
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'gamoraloja');
+
+include "../navbar/GameNav.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -10,56 +30,26 @@
 </head>
 
 <body>
-    <header>
-    <?php 
-
-
-        session_start();
-
-        if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
-            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
-            header('Location: ../login.php');
-            exit;
-        }
-
-        if (!isset($_SESSION['biblioteca'])) {
-            $_SESSION['biblioteca'] = [];
-        }
-
-        $bibliotecaVazia = empty($_SESSION['biblioteca']);
-
-        define('DB_HOST', 'localhost');
-        define('DB_USER', 'root');
-        define('DB_PASS', '');
-        define('DB_NAME', 'gamoraloja');
-
-         include "../navbar/GameNav.php";
-    ?>
-    </header>
+    <header></header>
 
     <div class="main-container">
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="https://meups.com.br/wp-content/uploads/2023/06/spider-scaled.jpg" alt="red dead">
+                <img id="mainImage" src="https://meups.com.br/wp-content/uploads/2023/06/spider-scaled.jpg" alt="Spider-Man 2">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
                 <img class="thumb active" src="https://meups.com.br/wp-content/uploads/2023/06/spider-scaled.jpg" alt="Thumbnail 1"
                     onclick="changeImage('https://meups.com.br/wp-content/uploads/2023/06/spider-scaled.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/spiderman/gameplay1.jpg" alt="Thumbnail 1"
+                <img class="thumb" src="../src/Capas/spiderman/gameplay1.jpg" alt="Thumbnail 2"
                     onclick="changeImage('../src/Capas/spiderman/gameplay1.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/spiderman/gameplay2.jpg" alt="Thumbnail 2"
+                <img class="thumb" src="../src/Capas/spiderman/gameplay2.jpg" alt="Thumbnail 3"
                     onclick="changeImage('../src/Capas/spiderman/gameplay2.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/spiderman/gameplay3.jpg" alt="Thumbnail 3"
+                <img class="thumb" src="../src/Capas/spiderman/gameplay3.jpg" alt="Thumbnail 4"
                     onclick="changeImage('../src/Capas/spiderman/gameplay3.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/spiderman/gameplay4.jpg" alt="Thumbnail 4"
+                <img class="thumb" src="../src/Capas/spiderman/gameplay4.jpg" alt="Thumbnail 5"
                     onclick="changeImage('../src/Capas/spiderman/gameplay4.jpg', this)">
-
             </div>
         </div>
 
@@ -67,29 +57,20 @@
             <div class="game-info">
                 <h1>Spider-Man 2</h1>
                 <p>Desenvolvedor:
-                    <strong> Insomniac Games, Nixxes Software</strong>
-                    <br>
+                    <strong>Insomniac Games, Nixxes Software</strong><br>
                     Distribuidora:
-                    <strong>
-                        PlayStation Publishing LLC</strong>
-
+                    <strong>PlayStation Publishing LLC</strong>
                 </p>
-                <p class="price">R$ 274,00</p>
+                <p class="price">R$ 199,00</p>
             </div>
             <div class="button-container">
                 <button class="favorite" id="favorite-button">
                     <span class="coracao" id="coracao">FAVORITAR</span>
                 </button>
-
                 <button class="add-to-cart">Adicionar ao Carrinho</button>
-
             </div>
         </div>
     </div>
-
-
-
-
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -109,8 +90,6 @@
                         quantity: 1
                     };
 
-                    console.log('Enviando dados:', productDetails);
-
                     fetch('../add_cart.php', {
                         method: 'POST',
                         headers: {
@@ -125,8 +104,6 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Resposta do servidor:', data);
-
                             if (data.success) {
                                 addToCartButton.classList.add('success');
                                 addToCartButton.textContent = 'Adicionado!';
@@ -155,8 +132,6 @@
             }
         });
     </script>
-
-
 
     <style>
         .add-to-cart {
@@ -193,24 +168,15 @@
         }
 
         @keyframes shake {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateX(0);
             }
 
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
+            10%, 30%, 50%, 70%, 90% {
                 transform: translateX(-5px);
             }
 
-            20%,
-            40%,
-            60%,
-            80% {
+            20%, 40%, 60%, 80% {
                 transform: translateX(5px);
             }
         }
@@ -226,5 +192,4 @@
     </style>
 
 </body>
-
 </html>

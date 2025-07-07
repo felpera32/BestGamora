@@ -1,3 +1,23 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    header('Location: ../login.php');
+    exit;
+}
+
+if (!isset($_SESSION['biblioteca'])) {
+    $_SESSION['biblioteca'] = [];
+}
+
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'gamoraloja');
+
+include "../navbar/GameNav.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -10,77 +30,41 @@
 </head>
 
 <body>
-    <header>
-    <?php 
-
-
-        session_start();
-
-        if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
-            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
-            header('Location: ../login.php');
-            exit;
-        }
-
-        if (!isset($_SESSION['biblioteca'])) {
-            $_SESSION['biblioteca'] = [];
-        }
-
-        $bibliotecaVazia = empty($_SESSION['biblioteca']);
-
-        define('DB_HOST', 'localhost');
-        define('DB_USER', 'root');
-        define('DB_PASS', '');
-        define('DB_NAME', 'gamoraloja');
-
-         include "../navbar/GameNav.php";
-    ?>
-    </header>
-
     <div class="main-container">
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/stardew/Capa.jpg" alt="red dead">
+                <img id="mainImage" src="../src/Capas/stardew/Capa.jpg" alt="Stardew Valley">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/stardew/Capa.jpg" alt="Thumbnail 1"
+                <img class="thumb active" src="../src/Capas/stardew/Capa.jpg" alt="Capa"
                     onclick="changeImage('../src/Capas/stardew/Capa.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/stardew/gameplay1.jpg" alt="Thumbnail 1"
+                <img class="thumb" src="../src/Capas/stardew/gameplay1.jpg" alt="Gameplay 1"
                     onclick="changeImage('../src/Capas/stardew/gameplay1.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/stardew/gameplay2.jpg" alt="Thumbnail 2"
+                <img class="thumb" src="../src/Capas/stardew/gameplay2.jpg" alt="Gameplay 2"
                     onclick="changeImage('../src/Capas/stardew/gameplay2.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/stardew/gameplay3.jpg" alt="Thumbnail 3"
+                <img class="thumb" src="../src/Capas/stardew/gameplay3.jpg" alt="Gameplay 3"
                     onclick="changeImage('../src/Capas/stardew/gameplay3.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/stardew/gameplay4.jpg" alt="Thumbnail 4"
+                <img class="thumb" src="../src/Capas/stardew/gameplay4.jpg" alt="Gameplay 4"
                     onclick="changeImage('../src/Capas/stardew/gameplay4.jpg', this)">
-
             </div>
         </div>
 
         <div class="right-column">
             <div class="game-info">
                 <h1>Stardew Valley</h1>
-                <p>Desenvolvedor: <strong>
-                        ConcernedApe</strong></p>
+                <p>Desenvolvedor: <strong>ConcernedApe</strong></p>
                 <p class="price">R$ 24,99</p>
             </div>
             <div class="button-container">
                 <button class="favorite" id="favorite-button">
                     <span class="coracao" id="coracao">FAVORITAR</span>
                 </button>
-
                 <button class="add-to-cart">Adicionar ao Carrinho</button>
-
             </div>
         </div>
     </div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -100,8 +84,6 @@
                         quantity: 1
                     };
 
-                    console.log('Enviando dados:', productDetails);
-
                     fetch('../add_cart.php', {
                         method: 'POST',
                         headers: {
@@ -116,8 +98,6 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Resposta do servidor:', data);
-
                             if (data.success) {
                                 addToCartButton.classList.add('success');
                                 addToCartButton.textContent = 'Adicionado!';
@@ -146,8 +126,6 @@
             }
         });
     </script>
-
-
 
     <style>
         .add-to-cart {
@@ -184,26 +162,9 @@
         }
 
         @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: translateX(-5px);
-            }
-
-            20%,
-            40%,
-            60%,
-            80% {
-                transform: translateX(5px);
-            }
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .perfil-foto {
@@ -216,5 +177,4 @@
         }
     </style>
 </body>
-
 </html>

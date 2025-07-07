@@ -19,7 +19,9 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
 
 <body>
     <header>
-        <!-- Navbar já incluída acima -->
+        <?php 
+            include "../GameNav.php";
+        ?>
     </header>
 
     <div class="main-container">

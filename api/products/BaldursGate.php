@@ -33,18 +33,17 @@ include "../navbar/GameNav.php";
 <body>
 
 <header>
-    <!-- GameNav.php já foi incluído acima -->
 </header>
 
 <div class="main-container">
     <div class="left-column">
         <div class="game-image-container">
             <button class="nav prev" id="prev">&#10094;</button>
-            <img id="mainImage" src="../src/Capas/bg3/capa.jpg" alt="Capa do jogo">
+            <img id="mainImage" src="../src/Capas/bg3/Capa.jpg" alt="Capa do jogo">
             <button class="nav next" id="next">&#10095;</button>
         </div>
         <div class="thumbnails">
-            <img class="thumb active" src="../src/Capas/bg3/capa.jpg" alt="Thumbnail 1" onclick="changeImage('../src/Capas/bg3/capa.jpg', this)">
+            <img class="thumb active" src="../src/Capas/bg3/Capa.jpg" alt="Thumbnail 1" onclick="changeImage('../src/Capas/bg3/Capa.jpg', this)">
             <img class="thumb" src="../src/Capas/bg3/gameplay1.jpg" alt="Thumbnail 2" onclick="changeImage('../src/Capas/bg3/gameplay1.jpg', this)">
             <img class="thumb" src="../src/Capas/bg3/gameplay2.jpg" alt="Thumbnail 3" onclick="changeImage('../src/Capas/bg3/gameplay2.jpg', this)">
             <img class="thumb" src="../src/Capas/bg3/gameplay3.jpg" alt="Thumbnail 4" onclick="changeImage('../src/Capas/bg3/gameplay3.jpg', this)">
