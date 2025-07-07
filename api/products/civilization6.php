@@ -38,15 +38,15 @@ include "../navbar/GameNav.php";
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/civ/Capa.jpg" alt="Civilization VI">
+                <img id="mainImage" src="../src/Capas/Civ/Capa.jpg" alt="Civilization VI">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/civ/capa.jpg" onclick="changeImage('../src/Capas/civ/capa.jpg', this)">
-                <img class="thumb" src="../src/Capas/civ/gameplay1.jpg" onclick="changeImage('../src/Capas/civ/gameplay1.jpg', this)">
-                <img class="thumb" src="../src/Capas/civ/gameplay2.jpg" onclick="changeImage('../src/Capas/civ/gameplay2.jpg', this)">
-                <img class="thumb" src="../src/Capas/civ/gameplay3.jpg" onclick="changeImage('../src/Capas/civ/gameplay3.jpg', this)">
-                <img class="thumb" src="../src/Capas/civ/gameplay4.jpg" onclick="changeImage('../src/Capas/civ/gameplay4.jpg', this)">
+                <img class="thumb active" src="../src/Capas/Civ/capa.jpg" onclick="changeImage('../src/Capas/Civ/capa.jpg', this)">
+                <img class="thumb" src="../src/Capas/Civ/gameplay1.jpg" onclick="changeImage('../src/Capas/Civ/gameplay1.jpg', this)">
+                <img class="thumb" src="../src/Capas/Civ/gameplay2.jpg" onclick="changeImage('../src/Capas/Civ/gameplay2.jpg', this)">
+                <img class="thumb" src="../src/Capas/Civ/gameplay3.jpg" onclick="changeImage('../src/Capas/Civ/gameplay3.jpg', this)">
+                <img class="thumb" src="../src/Capas/Civ/gameplay4.jpg" onclick="changeImage('../src/Capas/Civ/gameplay4.jpg', this)">
             </div>
         </div>
 
