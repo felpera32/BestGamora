@@ -6,12 +6,7 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "gamoraloja";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+include "connect.php";
 
 if ($conn->connect_error) {
     die("Erro na conexão com o banco de dados: " . $conn->connect_error);
