@@ -6,23 +6,19 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
+require_once 'connect.php'; // ← conexão reutilizada
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "gamoraloja";
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Falha na conexão: " . $conn->connect_error);
+    if (!$conn) {
+        die("Falha na conexão: " . mysqli_connect_error());
     }
 
     $nome = mysqli_real_escape_string($conn, $_POST['game_name']);
     $categoria = mysqli_real_escape_string($conn, $_POST['category']);
     $preco = floatval($_POST['price']);
     $descricao = mysqli_real_escape_string($conn, $_POST['description']);
-    $fabricante = $_SESSION['usuario']['nome']; // <- Alterado aqui
+    $fabricante = $_SESSION['usuario']['nome'];
     $estoque = 1;
     $status = "Disponível";
 
@@ -87,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $uploadFile = $screenshotDir . $nomeArquivo;
 
                     if (move_uploaded_file($_FILES['screenshots']['tmp_name'][$i], $uploadFile)) {
-                        // Aqui você pode inserir na tabela de screenshots se quiser
+                        // Se quiser, pode salvar as screenshots no banco aqui
                     }
                 }
             }
