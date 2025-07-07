@@ -261,7 +261,7 @@ session_start();
         </div>
 
         <div class="produto">
-          <img src="src/Capas/gta/capa.jpg" alt="GTA 6">
+          <img src="src/Capas/Gta/capa.jpg" alt="GTA 6">
           <h3>GTA 6</h3>
           <p>R$ 10 MIL</p>
           <div class="produto-botoes">
