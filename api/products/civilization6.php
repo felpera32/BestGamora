@@ -38,7 +38,7 @@ include "../navbar/GameNav.php";
         <div class="left-column">
             <div class="game-image-container">
                 <button class="nav prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/Civ/Capa.jpg" alt="Civilization VI">
+                <img id="mainImage" src="../src/Capas/Civ/capa.jpg" alt="Civilization VI">
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
