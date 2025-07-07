@@ -1,3 +1,24 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    header('Location: ../login.php');
+    exit;
+}
+
+if (!isset($_SESSION['biblioteca'])) {
+    $_SESSION['biblioteca'] = [];
+}
+
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'gamoraloja');
+
+include "../navbar/GameNav.php";
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -11,31 +32,7 @@
 
 <body>
     <header>
-
-    <?php 
-
-
-        session_start();
-
-        if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
-            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
-            header('Location: ../login.php');
-            exit;
-        }
-
-        if (!isset($_SESSION['biblioteca'])) {
-            $_SESSION['biblioteca'] = [];
-        }
-
-        $bibliotecaVazia = empty($_SESSION['biblioteca']);
-
-        define('DB_HOST', 'localhost');
-        define('DB_USER', 'root');
-        define('DB_PASS', '');
-        define('DB_NAME', 'gamoraloja');
-
-         include "../navbar/GameNav.php";
-    ?>
+        <!-- Navbar já incluída acima -->
     </header>
 
     <div class="main-container">
@@ -46,19 +43,15 @@
                 <button class="nav next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/celeste/Capa.jpg" alt="Thumbnail 1"
+                <img class="thumb active" src="../src/Capas/celeste/capa.jpg" alt="Thumbnail 1"
                     onclick="changeImage('../src/Capas/celeste/capa.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/celeste/gameplay1.jpg" alt="Thumbnail 1"
+                <img class="thumb" src="../src/Capas/celeste/gameplay1.jpg" alt="Thumbnail 2"
                     onclick="changeImage('../src/Capas/celeste/gameplay1.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/celeste/gameplay2.jpg" alt="Thumbnail 2"
+                <img class="thumb" src="../src/Capas/celeste/gameplay2.jpg" alt="Thumbnail 3"
                     onclick="changeImage('../src/Capas/celeste/gameplay2.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/celeste/gameplay3.jpg" alt="Thumbnail 3"
+                <img class="thumb" src="../src/Capas/celeste/gameplay3.jpg" alt="Thumbnail 4"
                     onclick="changeImage('../src/Capas/celeste/gameplay3.jpg', this)">
-
-                <img class="thumb" src="../src/Capas/celeste/gameplay4.jpg" alt="Thumbnail 4"
+                <img class="thumb" src="../src/Capas/celeste/gameplay4.jpg" alt="Thumbnail 5"
                     onclick="changeImage('../src/Capas/celeste/gameplay4.jpg', this)">
             </div>
         </div>
@@ -73,18 +66,16 @@
                 <button class="favorite" id="favorite-button">
                     <span class="coracao" id="coracao">FAVORITAR</span>
                 </button>
-
                 <button class="add-to-cart">Adicionar ao Carrinho</button>
-
             </div>
         </div>
     </div>
 
-
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const addToCartButton = document.querySelector('.add-to-cart');
+            const favoriteButton = document.getElementById('favorite-button');
+            const coracao = document.getElementById('coracao');
 
             if (addToCartButton) {
                 addToCartButton.addEventListener('click', (event) => {
@@ -100,24 +91,13 @@
                         quantity: 1
                     };
 
-                    console.log('Enviando dados:', productDetails);
-
                     fetch('../add_cart.php', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(productDetails)
                     })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
+                        .then(response => response.ok ? response.json() : Promise.reject(response))
                         .then(data => {
-                            console.log('Resposta do servidor:', data);
-
                             if (data.success) {
                                 addToCartButton.classList.add('success');
                                 addToCartButton.textContent = 'Adicionado!';
@@ -133,9 +113,6 @@
                             console.error('Erro:', error);
                             addToCartButton.classList.add('error');
                             alert('Erro: ' + error.message);
-                            setTimeout(() => {
-                                addToCartButton.classList.remove('error');
-                            }, 2000);
                         })
                         .finally(() => {
                             addToCartButton.classList.remove('clicked');
@@ -145,55 +122,38 @@
                 });
             }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                const favoriteButton = document.getElementById('favorite-button');
-                const coracao = document.getElementById('coracao');
-                
-                if (favoriteButton) {
-                    favoriteButton.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        favoriteButton.disabled = true;
-                        favoriteButton.classList.add('clicked');
-                        
-                        // Dados do jogo - certifique-se de que o ID está correto
-                        const gameDetails = {
-                            id: 18, // Certifique-se de que este ID existe na tabela produtos
-                            name: 'Celeste',
-                            price: 40.00,
-                            developer: 'Maddy Makes Games',
-                            image: '../src/Capas/celeste/capa.jpg'
-                        };
-                        
-                        console.log('Adicionando aos favoritos:', gameDetails);
-                        
-                        fetch('../add_wishlist.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(gameDetails)
-                        })
+            if (favoriteButton) {
+                favoriteButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    favoriteButton.disabled = true;
+                    favoriteButton.classList.add('clicked');
+
+                    const gameDetails = {
+                        id: 18,
+                        name: 'Celeste',
+                        price: 40.00,
+                        developer: 'Maddy Makes Games',
+                        image: '../src/Capas/celeste/capa.jpg'
+                    };
+
+                    fetch('../add_wishlist.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(gameDetails)
+                    })
                         .then(response => {
-                            console.log('Status da resposta:', response.status);
-                            
-                            if (!response.ok) {
-                                return response.text().then(text => {
-                                    console.error('Resposta de erro:', text);
-                                    throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-                                });
-                            }
+                            if (!response.ok) return response.text().then(text => { throw new Error(text); });
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Resposta do servidor:', data);
-                            
                             if (data.success) {
                                 favoriteButton.classList.add('favorited');
                                 coracao.textContent = 'FAVORITADO!';
                                 coracao.style.color = '#ff4757';
-                                
-                                // Mostrar mensagem de sucesso
+
                                 const successMessage = document.createElement('div');
                                 successMessage.style.cssText = `
                                     position: fixed;
@@ -208,13 +168,11 @@
                                 `;
                                 successMessage.textContent = 'Jogo adicionado aos favoritos!';
                                 document.body.appendChild(successMessage);
-                                
-                                // Remover mensagem após 3 segundos
+
                                 setTimeout(() => {
                                     document.body.removeChild(successMessage);
                                 }, 3000);
-                                
-                                // Opcional: perguntar se quer ir para lista de desejos
+
                                 setTimeout(() => {
                                     if (confirm('Deseja ver sua lista de desejos?')) {
                                         window.location.href = '../pages/wishlist.php';
@@ -225,38 +183,18 @@
                             }
                         })
                         .catch(error => {
-                            console.error('Erro completo:', error);
+                            console.error('Erro:', error);
                             favoriteButton.classList.add('error');
-                            
-                            // Mostrar mensagem de erro mais detalhada
-                            let errorMessage = 'Erro ao adicionar aos favoritos';
-                            if (error.message.includes('não logado')) {
-                                errorMessage = 'Você precisa estar logado para favoritar jogos';
-                            } else if (error.message.includes('já está na lista')) {
-                                errorMessage = 'Este jogo já está na sua lista de desejos';
-                            } else {
-                                errorMessage = error.message;
-                            }
-                            
-                            alert(errorMessage);
-                            
-                            setTimeout(() => {
-                                favoriteButton.classList.remove('error');
-                            }, 2000);
+                            alert(error.message);
                         })
                         .finally(() => {
                             favoriteButton.classList.remove('clicked');
                             favoriteButton.disabled = false;
                         });
-                    });
-                }
-            });
-                }
-            });
+                });
+            }
         });
     </script>
-
-
 
     <style>
         .add-to-cart {
@@ -270,7 +208,6 @@
             font-weight: 600;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
         }
 
         .add-to-cart:hover {
@@ -284,7 +221,6 @@
 
         .add-to-cart.success {
             background-color: #218838;
-            color: white;
         }
 
         .add-to-cart.error {
@@ -293,26 +229,9 @@
         }
 
         @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: translateX(-5px);
-            }
-
-            20%,
-            40%,
-            60%,
-            80% {
-                transform: translateX(5px);
-            }
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .perfil-foto {
