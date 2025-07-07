@@ -8,7 +8,6 @@ if (!$conn) {
 }
 
 function fazerLogin($conn, $email, $senha) {
-    // Preparar consulta
     $query = "SELECT * FROM clientes WHERE email = ?";
     $stmt = mysqli_prepare($conn, $query);
     
@@ -33,13 +32,11 @@ function fazerLogin($conn, $email, $senha) {
             'tipo_usuario' => $usuario['tipo_usuario']
         ];
         
-        // CORREÇÃO: Definir todas as variáveis que o carrinho espera
         $_SESSION['usuario_logado'] = true;
         $_SESSION['nome_usuario'] = $usuario['nome'];
-        $_SESSION['id_usuario'] = $usuario['idCliente']; // ← ESTA LINHA ESTAVA FALTANDO!
+        $_SESSION['id_usuario'] = $usuario['idCliente'];
         $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
         
-        // Debug - log das sessões criadas
         error_log("Login realizado com sucesso:");
         error_log("- usuario_logado: " . var_export($_SESSION['usuario_logado'], true));
         error_log("- id_usuario: " . $_SESSION['id_usuario']);
@@ -131,20 +128,10 @@ $erro = isset($_GET['erro']) ? $_GET['erro'] : null;
             </form>
         </div>
         <p>Não tem uma conta? <a href="reg.php">Registrar</a></p>
-        
-        <!-- Debug info temporário - remova depois -->
-        <div style="margin-top: 20px; padding: 10px; background: #f0f0f0; font-size: 12px;">
-            <strong>Debug Info:</strong><br>
-            Session ID: <?php echo session_id(); ?><br>
-            Usuário Logado: <?php echo isset($_SESSION['usuario_logado']) ? ($_SESSION['usuario_logado'] ? 'SIM' : 'NÃO') : 'NÃO DEFINIDO'; ?><br>
-            ID Usuário: <?php echo isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : 'NÃO DEFINIDO'; ?><br>
-            <a href="debug_session.php">Ver Debug Completo</a>
-        </div>
     </div>
 </body>
 </html>
 
 <?php
-// Fechar conexão
 mysqli_close($conn);
 ?>
