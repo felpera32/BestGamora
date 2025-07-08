@@ -126,7 +126,7 @@ function buscarSaldoMoedas($idCliente) {
 // Buscar saldo real de moedas do banco
 $userCoins = 0;
 try {
-    $userCoins = buscarSaldoMoedas($conn, $_SESSION['id_usuario']);
+    $userCoins = buscarSaldoMoedas($_SESSION['id_usuario']);
     error_log("Saldo de moedas do usuário ID " . $_SESSION['id_usuario'] . ": " . $userCoins);
 } catch (Exception $e) {
     error_log("Erro ao buscar saldo de moedas: " . $e->getMessage());
