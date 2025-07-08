@@ -23,6 +23,7 @@ include "../navbar/GameNav.php";
     <title>GTA 6</title>
     <link rel="stylesheet" href="../css/games.css">
     <script src="../js/game-gta.js"></script>
+    <script src="../js/havegame.js"></script>
 </head>
 
 <body>
