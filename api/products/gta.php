@@ -34,15 +34,15 @@ include "../navbar/GameNav.php";
         <div class="left-column">
             <div class="game-image-container">
                 <button class="prev" id="prev">&#10094;</button>
-                <img id="mainImage" src="../src/Capas/gta/capa.jpg" alt="GTA 6">
+                <img id="mainImage" src="../src/Capas/Gta/capa.jpg" alt="GTA 6">
                 <button class="next" id="next">&#10095;</button>
             </div>
             <div class="thumbnails">
-                <img class="thumb active" src="../src/Capas/gta/capa.jpg" onclick="changeImage('../src/Capas/gta/capa.jpg', this)">
-                <img class="thumb" src="../src/Capas/gta/gameplay1.jpg" onclick="changeImage('../src/Capas/gta/gameplay1.jpg', this)">
-                <img class="thumb" src="../src/Capas/gta/gameplay2.jpg" onclick="changeImage('../src/Capas/gta/gameplay2.jpg', this)">
-                <img class="thumb" src="../src/Capas/gta/gameplay3.jpg" onclick="changeImage('../src/Capas/gta/gameplay3.jpg', this)">
-                <img class="thumb" src="../src/Capas/gta/gameplay4.jpg" onclick="changeImage('../src/Capas/gta/gameplay4.jpg', this)">
+                <img class="thumb active" src="../src/Capas/Gta/capa.jpg" onclick="changeImage('../src/Capas/Gta/capa.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/gameplay1.jpg" onclick="changeImage('../src/Capas/Gta/gameplay1.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/gameplay2.jpg" onclick="changeImage('../src/Capas/Gta/gameplay2.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/gameplay3.jpg" onclick="changeImage('../src/Capas/Gta/gameplay3.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/gameplay4.jpg" onclick="changeImage('../src/Capas/Gta/gameplay4.jpg', this)">
             </div>
         </div>
 
