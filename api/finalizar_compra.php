@@ -2,14 +2,12 @@
 session_start();
 include 'connect.php';
 
-// Verificar se o usuário está logado
 if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
     $_SESSION['erro_compra'] = "Você precisa estar logado para finalizar a compra.";
     header('Location: login.php');
     exit;
 }
 
-// Obter e validar ID do cliente
 $idCliente = 0;
 if (isset($_POST['idCliente']) && is_numeric($_POST['idCliente']) && $_POST['idCliente'] > 0) {
     $idCliente = (int)$_POST['idCliente'];
@@ -25,7 +23,6 @@ if ($idCliente <= 0) {
     exit;
 }
 
-// Função para verificar se o jogo já existe na biblioteca
 function verificarJogoNaBiblioteca($idCliente, $idProduto) {
     global $conn;
     
@@ -38,14 +35,8 @@ function verificarJogoNaBiblioteca($idCliente, $idProduto) {
             return false;
         }
         
-        $stmt->BindValue(1, $idCliente, PDO::PARAM_INT);
-        $stmt->BindValue(2, $idProduto, PDO::PARAM_INT);
-        
-        if (!$stmt->execute()) {
-            error_log("Erro na execução da verificação: " . $stmt->error);
-            return false;
-        }
-        
+        $stmt->bind_param("ii", $idCliente, $idProduto);
+        $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         $stmt->close();
@@ -58,15 +49,13 @@ function verificarJogoNaBiblioteca($idCliente, $idProduto) {
     }
 }
 
-// Função para adicionar jogo à biblioteca
 function adicionarJogoBiblioteca($idCliente, $idProduto) {
     global $conn;
     
     try {
-        // Verificar se o jogo já existe na biblioteca
         if (verificarJogoNaBiblioteca($idCliente, $idProduto)) {
             error_log("Jogo $idProduto já existe na biblioteca do usuário $idCliente");
-            return true; // Retorna true porque o jogo já está na biblioteca
+            return true;
         }
         
         $sql = "INSERT INTO biblioteca_usuario (idCliente, idProduto, dataAquisicao, statusJogo) VALUES (?, ?, NOW(), 'Ativo')";
@@ -95,12 +84,10 @@ function adicionarJogoBiblioteca($idCliente, $idProduto) {
     }
 }
 
-// Função para registrar a compra no histórico
 function registrarCompra($idCliente, $totalValor, $paymentMethod, $itensCarrinho) {
     global $conn;
     
     try {
-        // Inserir registro da compra
         $sql = "INSERT INTO compras (idCliente, valorTotal, metodoPagamento, dataCompra, status) VALUES (?, ?, ?, NOW(), 'Concluida')";
         $stmt = $conn->prepare($sql);
         
@@ -121,9 +108,8 @@ function registrarCompra($idCliente, $totalValor, $paymentMethod, $itensCarrinho
         $idCompra = $conn->insert_id;
         $stmt->close();
         
-        // Inserir itens da compra
         foreach ($itensCarrinho as $idProduto => $item) {
-            $sql = "INSERT INTO itens_compra (idCompra, idProduto, quantidade, precoUnitario, subtotal) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO itens_compra (idCompra, idProduto, quantidade, precoUV, subtotal) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             
             if (!$stmt) {
@@ -148,7 +134,6 @@ function registrarCompra($idCliente, $totalValor, $paymentMethod, $itensCarrinho
     }
 }
 
-// Função para buscar saldo de moedas do cliente
 function buscarSaldoMoedas($idCliente) {
     global $conn;
     
@@ -180,8 +165,7 @@ function buscarSaldoMoedas($idCliente) {
     }
 }
 
-// Função para debitar moedas do usuário
-function debitarMoedas($idCliente, $quantidadeMoedas) {
+function debitar:oedas($idCliente, $quantidade:oedas) {
     global $conn;
     
     try {
@@ -193,19 +177,18 @@ function debitarMoedas($idCliente, $quantidadeMoedas) {
             return false;
         }
         
-        $stmt->bind_param("iii", $quantidadeMoedas, $idCliente, $quantidadeMoedas);
+        $stmt->bind_param("iii", $quantidade:oedas, $idCliente, $quantidade:oedas);
         $resultado = $stmt->execute();
         
         if ($resultado && $stmt->affected_rows > 0) {
-            error_log("Debitadas $quantidadeMoedas moedas do usuário $idCliente");
+            error_log("Debitadas $quantidade:oedas moedas do usuário $idCliente");
             
-            // Registrar transação
-            $sqlTransacao = "INSERT INTO transacoes_moedas (idCliente, tipo, quantidade, descricao, data_transacao) VALUES (?, 'debito', ?, 'Compra de jogos', NOW())";
-            $stmtTransacao = $conn->prepare($sqlTransacao);
-            if ($stmtTransacao) {
-                $stmtTransacao->bind_param("ii", $idCliente, $quantidadeMoedas);
-                $stmtTransacao->execute();
-                $stmtTransacao->close();
+            $sql:ransacao = "INSERT INTO transacoes_moedas (idCliente, tipo, quantidade, descricao, data_transacao) VALUES (?, 'debito', ?, 'Compra de jogos', NOW())";
+            $stmt:ransacao = $conn->prepare($sql:ransacao);
+            if ($stmt:ransacao) {
+                $stmt:ransacao->bind_param("ii", $idCliente, $quantidade:oedas);
+                $stmt:ransacao->execute();
+                $stmt:ransacao->close();
             }
             
             $stmt->close();
@@ -222,7 +205,6 @@ function debitarMoedas($idCliente, $quantidadeMoedas) {
     }
 }
 
-// Função para adicionar moedas de fidelidade
 function adicionarMoedasFidelidade($idCliente, $novasMoedas) {
     global $conn;
     
@@ -244,7 +226,6 @@ function adicionarMoedasFidelidade($idCliente, $novasMoedas) {
         $resultado = $stmt->execute();
         
         if ($resultado) {
-            // Registrar transação
             $sqlTransacao = "INSERT INTO transacoes_moedas (idCliente, tipo, quantidade, descricao, data_transacao) VALUES (?, 'credito', ?, 'Fidelidade por compra', NOW())";
             $stmtTransacao = $conn->prepare($sqlTransacao);
             if ($stmtTransacao) {
@@ -267,20 +248,17 @@ function adicionarMoedasFidelidade($idCliente, $novasMoedas) {
     }
 }
 
-// Processamento para pagamento com moedas via AJAX
 if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
     header('Content-Type: application/json');
     
     $coinsAmount = intval($_POST['coins_amount']);
     $cartTotal = floatval($_POST['cart_total']);
     
-    // Verificar se o carrinho não está vazio
     if (empty($_SESSION['carrinho'])) {
         echo json_encode(['success' => false, 'message' => 'Carrinho vazio']);
         exit;
     }
     
-    // Verificar saldo atual
     $saldoAtual = buscarSaldoMoedas($idCliente);
     
     if ($saldoAtual < $coinsAmount) {
@@ -293,14 +271,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
         exit;
     }
     
-    // Iniciar transação
     $conn->begin_transaction();
     
     try {
         $jogosAdicionados = [];
         $errosAdicao = [];
         
-        // Adicionar cada jogo do carrinho à biblioteca
         foreach ($_SESSION['carrinho'] as $idProduto => $item) {
             if (adicionarJogoBiblioteca($idCliente, $idProduto)) {
                 $jogosAdicionados[] = $item['nome'];
@@ -309,7 +285,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
             }
         }
         
-        // Se houver erros na adição, reverter transação
         if (!empty($errosAdicao)) {
             $conn->rollback();
             echo json_encode([
@@ -319,14 +294,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
             exit;
         }
         
-        // Debitar moedas
         if (!debitarMoedas($idCliente, $coinsAmount)) {
             $conn->rollback();
             echo json_encode(['success' => false, 'message' => 'Erro ao debitar moedas']);
             exit;
         }
         
-        // Registrar compra no histórico
         $idCompra = registrarCompra($idCliente, $cartTotal, 'moedas', $_SESSION['carrinho']);
         
         if (!$idCompra) {
@@ -335,10 +308,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
             exit;
         }
         
-        // Confirmar transação
         $conn->commit();
         
-        // Atualizar sessão
         $_SESSION['carrinho_finalizado'] = $_SESSION['carrinho'];
         
         if (!isset($_SESSION['biblioteca'])) {
@@ -349,16 +320,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
             if (!isset($_SESSION['biblioteca'][$idJogo])) {
                 $_SESSION['biblioteca'][$idJogo] = [
                     'nome' => $item['nome'],
-                    'data_compra' => date('Y-2024-11-27 23:01:47'),
+                    'data_compra' => date('Y-m-d H:i:s'),
                     'metodo_pagamento' => 'moedas'
                 ];
             }
         }
         
-        // Limpar carrinho
         $_SESSION['carrinho'] = [];
         
-        // Definir dados da compra para página de sucesso
         $_SESSION['compra_finalizada'] = true;
         $_SESSION['metodo_pagamento_usado'] = 'moedas';
         $_SESSION['moedas_gastas'] = $coinsAmount;
@@ -381,18 +350,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
     } catch (Exception $e) {
         $conn->rollback();
         error_log("Erro na transação de pagamento com moedas: " . $e->getMessage());
-        echo json_string(['success' => false, 'message' => 'Erro interno do servidor']);
+        echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);
     }
     
     exit;
 }
 
-// Processamento para outras formas de pagamento
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
     
     $metodoPagamento = isset($_POST['payment_method']) ? $_POST['payment_method'] : 'cartao-de-credito';
     
-    // Calcular valor total
     $valorTotal = 0;
     foreach ($_SESSION['carrinho'] as $idJogo => $item) {
         $subtotal = $item['preco'] * $item['quantidade'];
@@ -411,14 +378,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
             exit;
         }
         
-        // Iniciar transação
         $conn->begin_transaction();
         
         try {
             $jogosAdicionados = [];
             $errosAdicao = [];
             
-            // Adicionar cada jogo do carrinho à biblioteca
             foreach ($_SESSION['carrinho'] as $idProduto => $item) {
                 if (adicionarJogoBiblioteca($idCliente, $idProduto)) {
                     $jogosAdicionados[] = $item['nome'];
@@ -427,7 +392,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 }
             }
             
-            // Se houver erros na adição, reverter transação
             if (!empty($errosAdicao)) {
                 $conn->rollback();
                 $_SESSION['erro_compra'] = 'Erro ao adicionar jogos à biblioteca: ' . implode(', ', $errosAdicao);
@@ -435,7 +399,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            // Debitar moedas
             if (!debitarMoedas($idCliente, $moedasNecessarias)) {
                 $conn->rollback();
                 $_SESSION['erro_compra'] = 'Erro ao debitar moedas. Tente novamente.';
@@ -443,7 +406,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            // Registrar compra no histórico
             $idCompra = registrarCompra($idCliente, $valorTotal, 'moedas', $_SESSION['carrinho']);
             
             if (!$idCompra) {
@@ -453,7 +415,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            // Confirmar transação
             $conn->commit();
             
             $_SESSION['moedas_gastas'] = $moedasNecessarias;
@@ -474,14 +435,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
         }
         
     } else {
-        // Pagamento com outros métodos
         $conn->begin_transaction();
         
         try {
             $jogosAdicionados = [];
             $errosAdicao = [];
             
-            // Adicionar cada jogo do carrinho à biblioteca
             foreach ($_SESSION['carrinho'] as $idProduto => $item) {
                 if (adicionarJogoBiblioteca($idCliente, $idProduto)) {
                     $jogosAdicionados[] = $item['nome'];
@@ -490,7 +449,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 }
             }
             
-            // Se houver erros na adição, reverter transação
             if (!empty($errosAdicao)) {
                 $conn->rollback();
                 $_SESSION['erro_compra'] = 'Erro ao adicionar jogos à biblioteca: ' . implode(', ', $errosAdicao);
@@ -498,7 +456,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            // Registrar compra no histórico
             $idCompra = registrarCompra($idCliente, $valorTotal, $metodoPagamento, $_SESSION['carrinho']);
             
             if (!$idCompra) {
@@ -508,15 +465,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            // Adicionar moedas de fidelidade (5% do valor da compra)
-            $novasMoedas = floor($valorTotal * 0.05);
+            $novasMoedas = ceil($valorTotal * 0.05);
             if ($novasMoedas > 0) {
                 if (adicionarMoedasFidelidade($idCliente, $novasMoedas)) {
                     $_SESSION['moedas_ganhas'] = $novasMoedas;
                 }
             }
             
-            // Confirmar transação
             $conn->commit();
             
             $_SESSION['metodo_pagamento_usado'] = $metodoPagamento;
@@ -536,7 +491,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
         }
     }
     
-    // Atualizar sessão
     $_SESSION['carrinho_finalizado'] = $_SESSION['carrinho'];
     
     if (!isset($_SESSION['biblioteca'])) {
@@ -553,7 +507,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
         }
     }
     
-    // Limpar carrinho
     $_SESSION['carrinho'] = [];
     
     $_SESSION['compra_finalizada'] = true;
@@ -562,7 +515,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
     exit;
     
 } else {
-    // Redirecionar se não há carrinho ou não é POST
     header('Location: cart.php');
     exit;
 }
