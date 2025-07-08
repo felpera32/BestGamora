@@ -165,7 +165,7 @@ function buscarSaldoMoedas($idCliente) {
     }
 }
 
-function debitar:moedas($idCliente, $quantidade:moedas) {
+function debitarMoedas($idCliente, $quantidadeMoedas) {
     global $conn;
     
     try {
@@ -177,18 +177,18 @@ function debitar:moedas($idCliente, $quantidade:moedas) {
             return false;
         }
         
-        $stmt->bind_param("iii", $quantidade:oedas, $idCliente, $quantidade:oedas);
+        $stmt->bind_param("iii", $quantidadeMoedas, $idCliente, $quantidadeMoedas);
         $resultado = $stmt->execute();
         
         if ($resultado && $stmt->affected_rows > 0) {
-            error_log("Debitadas $quantidade:oedas moedas do usuário $idCliente");
+            error_log("Debitadas $quantidadeMoedas moedas do usuário $idCliente");
             
-            $sql:ransacao = "INSERT INTO transacoes_moedas (idCliente, tipo, quantidade, descricao, data_transacao) VALUES (?, 'debito', ?, 'Compra de jogos', NOW())";
-            $stmt:ransacao = $conn->prepare($sql:ransacao);
-            if ($stmt:ransacao) {
-                $stmt:ransacao->bind_param("ii", $idCliente, $quantidade:oedas);
-                $stmt:ransacao->execute();
-                $stmt:ransacao->close();
+            $sqlTransacao = "INSERT INTO transacoes_moedas (idCliente, tipo, quantidade, descricao, data_transacao) VALUES (?, 'debito', ?, 'Compra de jogos', NOW())";
+            $stmtTransacao = $conn->prepare($sqlTransacao);
+            if ($stmtTransacao) {
+                $stmtTransacao->bind_param("ii", $idCliente, $quantidadeMoedas);
+                $stmtTransacao->execute();
+                $stmtTransacao->close();
             }
             
             $stmt->close();
