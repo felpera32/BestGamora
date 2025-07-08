@@ -42,13 +42,11 @@ if (!$carrinhoVazio) {
 }
 
 
-// Função para obter a imagem principal do produto
 function getImagemPrincipal($idProduto)
 {
+    global $conn; 
+    
     try {
-        // Criar uma nova conexão independente para esta função
-        $conn = criarNovaConexao();
-        
         $sql = "SELECT urlImagem FROM imagensproduto WHERE idProduto = ? AND ordemExibicao = 1 AND status = 'Ativa' LIMIT 1";
         $stmt = $conn->prepare($sql);
         
@@ -63,7 +61,6 @@ function getImagemPrincipal($idProduto)
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $stmt->close();
-            $conn->close();
             return $row['urlImagem'];
         }
         
@@ -84,22 +81,21 @@ function getImagemPrincipal($idProduto)
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $stmt->close();
-            $conn->close();
             return $row['imagemPrincipal'] ? $row['imagemPrincipal'] : 'imagens/placeholder.jpg';
         }
         
         $stmt->close();
-        $conn->close();
         
     } catch (Exception $e) {
         error_log("Erro ao buscar imagem do produto $idProduto: " . $e->getMessage());
     }
 
-    return 'imagens/placeholder.jpg'; // Imagem padrão caso nenhuma seja encontrada
+    return 'imagens/placeholder.jpg';
 }
 
-// NOVA FUNÇÃO: Buscar saldo de moedas do banco de dados
-function buscarSaldoMoedas($conn, $idCliente) {
+function buscarSaldoMoedas($idCliente) {
+    global $conn; // Usar a conexão do connect.php
+    
     try {
         $sql = "SELECT moedas FROM clientes WHERE idCliente = ?";
         $stmt = $conn->prepare($sql);
@@ -127,7 +123,6 @@ function buscarSaldoMoedas($conn, $idCliente) {
         return 0;
     }
 }
-
 // Buscar saldo real de moedas do banco
 $userCoins = 0;
 try {
