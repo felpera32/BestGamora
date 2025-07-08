@@ -165,7 +165,7 @@ function buscarSaldoMoedas($idCliente) {
     }
 }
 
-function debitar:oedas($idCliente, $quantidade:oedas) {
+function debitar:moedas($idCliente, $quantidade:moedas) {
     global $conn;
     
     try {
