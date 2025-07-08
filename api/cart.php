@@ -118,6 +118,45 @@ function getImagemPrincipal($idProduto)
 
     return 'imagens/placeholder.jpg'; // Imagem padrão caso nenhuma seja encontrada
 }
+
+// NOVA FUNÇÃO: Buscar saldo de moedas do banco de dados
+function buscarSaldoMoedas($conn, $idCliente) {
+    try {
+        $sql = "SELECT moedas FROM clientes WHERE idCliente = ?";
+        $stmt = $conn->prepare($sql);
+        
+        if (!$stmt) {
+            error_log("Erro ao preparar consulta de moedas: " . $conn->error);
+            return 0;
+        }
+        
+        $stmt->bind_param("i", $idCliente);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            return (int)$row['moedas'];
+        }
+        
+        $stmt->close();
+        return 0;
+        
+    } catch (Exception $e) {
+        error_log("Erro ao buscar saldo de moedas: " . $e->getMessage());
+        return 0;
+    }
+}
+
+// Buscar saldo real de moedas do banco
+$userCoins = 0;
+try {
+    $userCoins = buscarSaldoMoedas($conn, $_SESSION['id_usuario']);
+    error_log("Saldo de moedas do usuário ID " . $_SESSION['id_usuario'] . ": " . $userCoins);
+} catch (Exception $e) {
+    error_log("Erro ao buscar saldo de moedas: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -143,6 +182,10 @@ function getImagemPrincipal($idProduto)
 
         <div class="user-info">
             <span>Olá, <?php echo isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário'; ?></span>
+            <div class="coins-display">
+                <span class="coins-icon">🪙</span>
+                <span id="user-coins-display"><?php echo number_format($userCoins); ?></span> moedas
+            </div>
         </div>
 
         <?php if ($carrinhoVazio): ?>
@@ -177,13 +220,9 @@ function getImagemPrincipal($idProduto)
         <div class="payment-methods">
             <h3>Método de Pagamento</h3>
             <?php
-            // Simula buscar saldo de moedas do usuário (substitua pela sua lógica de banco de dados)
-            $userCoins = isset($_SESSION['user_coins']) ? $_SESSION['user_coins'] : 500;
-            
-            // Calcula total do carrinho em moedas (assumindo 1 dólar = 100 moedas)
-            $cartTotalDollars = 0; // Você deve calcular isso baseado nos itens do carrinho
-            $coinsPerDollar = 100;
-            $requiredCoins = $cartTotalDollars * $coinsPerDollar;
+            // Calcular total do carrinho em moedas (assumindo 1 real = 100 moedas)
+            $coinsPerReal = 100;
+            $requiredCoins = ceil($valorTotal * $coinsPerReal);
             $hasSufficientCoins = $userCoins >= $requiredCoins;
             
             $paymentMethods = [
@@ -219,7 +258,7 @@ function getImagemPrincipal($idProduto)
                 
                 echo htmlspecialchars($method) . "</label>";
                 
-                // info para pagamento com moedas
+                // Info para pagamento com moedas
                 if ($isCoinsMethod) {
                     echo "<div class='coins-info'>
                             <div class='coins-balance " . ($hasSufficientCoins ? 'sufficient' : 'insufficient') . "'>
@@ -234,7 +273,7 @@ function getImagemPrincipal($idProduto)
                 echo "</div>";
             }
             
-            // msg de fundos insuficientes
+            // Mensagem de fundos insuficientes
             if (!$hasSufficientCoins && $requiredCoins > 0) {
                 $missingCoins = $requiredCoins - $userCoins;
                 echo "<div id='insufficient-funds' class='insufficient-funds-message'>
@@ -247,16 +286,70 @@ function getImagemPrincipal($idProduto)
             <form method="POST" action="finalizar_compra.php" id="checkout-form">
                 <input type="hidden" name="idCliente" value="<?php echo isset($_SESSION['id_usuario']) ? intval($_SESSION['id_usuario']) : 0; ?>">
                 <input type="hidden" name="payment_method" id="selected_payment">
+                <input type="hidden" name="total_valor" value="<?php echo $valorTotal; ?>">
+                <input type="hidden" name="total_moedas" value="<?php echo $requiredCoins; ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : ''; ?>">
-                <button type="submit" class="finalize-button">Finalizar Compra</button>
+                <button type="submit" class="finalize-button" id="finalize-btn">Finalizar Compra</button>
             </form>
 
             <script>
+                // Atualizar saldo de moedas em tempo real
+                function atualizarSaldoMoedas() {
+                    fetch('buscar_saldo_moedas.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('user-coins').textContent = data.saldo.toLocaleString();
+                                document.getElementById('user-coins-display').textContent = data.saldo.toLocaleString();
+                                
+                                // Atualizar estado do botão de moedas
+                                const totalMoedas = <?php echo $requiredCoins; ?>;
+                                const coinsMethod = document.getElementById('moedas');
+                                const coinsBalance = document.querySelector('.coins-balance');
+                                const insufficientFunds = document.getElementById('insufficient-funds');
+                                
+                                if (data.saldo >= totalMoedas) {
+                                    coinsMethod.disabled = false;
+                                    coinsBalance.className = 'coins-balance sufficient';
+                                    if (insufficientFunds) {
+                                        insufficientFunds.style.display = 'none';
+                                    }
+                                } else {
+                                    coinsMethod.disabled = true;
+                                    coinsBalance.className = 'coins-balance insufficient';
+                                    if (insufficientFunds) {
+                                        insufficientFunds.style.display = 'block';
+                                        const faltam = totalMoedas - data.saldo;
+                                        insufficientFunds.innerHTML = `Saldo insuficiente! Você precisa de mais ${faltam.toLocaleString()} moedas.`;
+                                    }
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao atualizar saldo:', error);
+                        });
+                }
+                
+                // Atualizar saldo a cada 30 segundos
+                setInterval(atualizarSaldoMoedas, 30000);
+                
                 // Script para garantir que um método de pagamento seja selecionado
                 document.getElementById('checkout-form').addEventListener('submit', function (e) {
                     // Obter método de pagamento selecionado
                     const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
                     if (selectedMethod) {
+                        // Verificar se é pagamento com moedas e se tem saldo suficiente
+                        if (selectedMethod.value === 'moedas') {
+                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/,/g, ''));
+                            const requiredCoins = <?php echo $requiredCoins; ?>;
+                            
+                            if (userCoins < requiredCoins) {
+                                e.preventDefault();
+                                alert('Saldo insuficiente para pagamento com moedas!');
+                                return false;
+                            }
+                        }
+                        
                         document.getElementById('selected_payment').value = selectedMethod.value;
                     } else {
                         e.preventDefault();
@@ -267,7 +360,32 @@ function getImagemPrincipal($idProduto)
                     // Debug - verificar se os dados estão sendo enviados
                     console.log('Dados do formulário:', {
                         idCliente: document.querySelector('input[name="idCliente"]').value,
-                        payment_method: document.getElementById('selected_payment').value
+                        payment_method: document.getElementById('selected_payment').value,
+                        total_valor: document.querySelector('input[name="total_valor"]').value,
+                        total_moedas: document.querySelector('input[name="total_moedas"]').value
+                    });
+                });
+                
+                // Monitorar mudanças no método de pagamento
+                document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const finalizeBtn = document.getElementById('finalize-btn');
+                        
+                        if (this.value === 'moedas') {
+                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/,/g, ''));
+                            const requiredCoins = <?php echo $requiredCoins; ?>;
+                            
+                            if (userCoins < requiredCoins) {
+                                finalizeBtn.disabled = true;
+                                finalizeBtn.textContent = 'Saldo Insuficiente';
+                            } else {
+                                finalizeBtn.disabled = false;
+                                finalizeBtn.textContent = 'Finalizar Compra';
+                            }
+                        } else {
+                            finalizeBtn.disabled = false;
+                            finalizeBtn.textContent = 'Finalizar Compra';
+                        }
                     });
                 });
             </script>
