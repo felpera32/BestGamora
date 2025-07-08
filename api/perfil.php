@@ -1,23 +1,9 @@
-Claro! Aqui está o **código completo corrigido** do seu `perfil.php`, com os seguintes ajustes feitos:
 
-✅ `session_start()` movido para o topo, antes de qualquer saída
-✅ Removido o segundo `<body>` duplicado
-✅ Garantido que não há espaço antes de `<?php`
-✅ Mantida toda a lógica existente intacta
-
----
-
-### ✅ Arquivo `perfil.php` corrigido:
-
-```php
 <?php
-// Iniciar sessão antes de qualquer saída
 session_start();
 
-// Incluir arquivo de conexão
 require_once 'connect.php';
 
-// Verificar se o usuário está logado
 if (!isset($_SESSION['usuario_logado']) || !$_SESSION['usuario_logado']) {
     header("Location: login.php");
     exit();
@@ -27,7 +13,6 @@ $idCliente = $_SESSION['usuario']['id'];
 $mensagem = "";
 $alertClass = "";
 
-// Buscar dados do cliente
 $stmt = $conn->prepare("SELECT * FROM Clientes WHERE idCliente = ?");
 $stmt->bind_param("i", $idCliente);
 $stmt->execute();
@@ -40,9 +25,7 @@ if ($result->num_rows > 0) {
     exit();
 }
 
-// Processar o formulário na hora de enviar
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validar os inputs
     $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $telefone = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_STRING);
@@ -52,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensagem = "Formato de e-mail inválido!";
         $alertClass = "alert-danger";
     } else {
-        // Verificar se o email já existe (exceto para o usuário atual)
         $stmt = $conn->prepare("SELECT idCliente FROM Clientes WHERE email = ? AND idCliente != ?");
         $stmt->bind_param("si", $email, $idCliente);
         $stmt->execute();
@@ -62,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mensagem = "Este e-mail já está sendo usado por outra conta!";
             $alertClass = "alert-danger";
         } else {
-            // Atualizar senha se fornecida
             $senhaAtual = $_POST['senha_atual'] ?? '';
             $novaSenha = $_POST['nova_senha'] ?? '';
             $confirmarSenha = $_POST['confirmar_senha'] ?? '';
