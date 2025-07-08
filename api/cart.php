@@ -51,7 +51,7 @@ function getImagemPrincipal($idProduto)
     global $conn; 
     
     try {
-        $sql = "SELECT urlImagem FROM imagensproduto WHERE idProduto = ? AND ordemExibicao = 1 AND status = 'Ativa' LIMIT 1";
+        $sql = "SELECT urlImagem FROM imagensproduto WHERE idProduto = ? AND ordemExibicao = 1 AND status = 'Ativa' ORDER BY idImagemProduto ASC LIMIT 1";
         $stmt = $conn->prepare($sql);
         
         if (!$stmt) {
@@ -64,14 +64,31 @@ function getImagemPrincipal($idProduto)
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $imagePath = $row['urlImagem'];
-            $stmt->close(); 
+            $imagePath = trim($row['urlImagem']);
+            $stmt->close();
             
-            if (!empty($imagePath) && file_exists($imagePath)) {
-                return $imagePath;
+            if (!empty($imagePath)) {
+                if (file_exists($imagePath)) {
+                    return $imagePath;
+                }
+                
+                $pathVariations = [
+                    $imagePath,
+                    str_replace('src/capas/', 'src/Capas/', $imagePath),
+                    str_replace('src/Capas/', 'src/capas/', $imagePath),
+                    str_replace('//', '/', $imagePath) 
+                ];
+                
+                foreach ($pathVariations as $variation) {
+                    if (file_exists($variation)) {
+                        return $variation;
+                    }
+                }
+                
+                error_log("Imagem não encontrada para produto $idProduto: $imagePath");
             }
         } else {
-            $stmt->close(); 
+            $stmt->close();
         }
         
         $sql = "SELECT imagemPrincipal FROM produtos WHERE idProduto = ? LIMIT 1";
@@ -87,26 +104,88 @@ function getImagemPrincipal($idProduto)
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $imagePath = $row['imagemPrincipal'];
-            $stmt->close(); 
+            $imagePath = trim($row['imagemPrincipal']);
+            $stmt->close();
             
-            if (!empty($imagePath) && file_exists($imagePath)) {
-                return $imagePath;
+            if (!empty($imagePath)) {
+                $pathVariations = [
+                    $imagePath,
+                    str_replace('src/capas/', 'src/Capas/', $imagePath),
+                    str_replace('src/Capas/', 'src/capas/', $imagePath),
+                    str_replace('//', '/', $imagePath)
+                ];
+                
+                foreach ($pathVariations as $variation) {
+                    if (file_exists($variation)) {
+                        return $variation;
+                    }
+                }
             }
         } else {
-            $stmt->close(); 
+            $stmt->close();
         }
         
     } catch (Exception $e) {
         error_log("Erro ao buscar imagem do produto $idProduto: " . $e->getMessage());
         if (isset($stmt) && $stmt instanceof mysqli_stmt) {
-            @$stmt->close(); 
+            @$stmt->close();
         }
     }
 
     return 'imagens/placeholder.jpg';
 }
 
+function verificarImagensProdutos()
+{
+    global $conn;
+    
+    $sql = "SELECT idImagemProduto, idProduto, urlImagem FROM imagensproduto WHERE status = 'Ativa'";
+    $result = $conn->query($sql);
+    
+    $problemas = [];
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $imagePath = trim($row['urlImagem']);
+            
+            if (!file_exists($imagePath)) {
+                $problemas[] = [
+                    'id' => $row['idImagemProduto'],
+                    'produto' => $row['idProduto'],
+                    'caminho' => $imagePath,
+                    'existe' => false
+                ];
+            }
+        }
+    }
+    
+    return $problemas;
+}
+
+function limparDuplicatasImagens()
+{
+    global $conn;
+    
+    $sql = "
+        DELETE i1 FROM imagensproduto i1
+        INNER JOIN imagensproduto i2 
+        WHERE i1.idImagemProduto > i2.idImagemProduto 
+        AND i1.idProduto = i2.idProduto 
+        AND i1.ordemExibicao = i2.ordemExibicao 
+        AND i1.status = i2.status
+    ";
+    
+    $result = $conn->query($sql);
+    
+    if ($result) {
+        $affected = $conn->affected_rows;
+        error_log("Removidas $affected duplicatas da tabela imagensproduto");
+        return $affected;
+    } else {
+        error_log("Erro ao remover duplicatas: " . $conn->error);
+        return false;
+    }
+}
 
 
 function buscarSaldoMoedas($idCliente) {
@@ -140,10 +219,9 @@ function buscarSaldoMoedas($idCliente) {
     }
 }
 
-// Buscar saldo real de moedas do banco - CORREÇÃO AQUI
 $userCoins = 0;
 try {
-    $userCoins = buscarSaldoMoedas($_SESSION['id_usuario']); // Removido $conn
+    $userCoins = buscarSaldoMoedas($_SESSION['id_usuario']); 
     error_log("Saldo de moedas do usuário ID " . $_SESSION['id_usuario'] . ": " . $userCoins);
 } catch (Exception $e) {
     error_log("Erro ao buscar saldo de moedas: " . $e->getMessage());
