@@ -1,8 +1,6 @@
 <?php
-// Inicia a sessão ANTES de qualquer output
 session_start();
 
-// Debug das variáveis de sessão (remova depois de testar)
 error_log("=== DEBUG CARRINHO ===");
 error_log("Session ID: " . session_id());
 error_log("usuario_logado: " . (isset($_SESSION['usuario_logado']) ? var_export($_SESSION['usuario_logado'], true) : 'não definido'));
@@ -13,7 +11,6 @@ error_log("=====================");
 
 include 'connect.php';
 
-// Verificação de sessão mais simples e clara
 if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
     error_log("Usuário não logado - redirecionando para login");
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
@@ -21,10 +18,8 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
     exit;
 }
 
-// Verificar se tem id_usuario (necessário para o formulário)
 if (!isset($_SESSION['id_usuario'])) {
     error_log("ID do usuário não encontrado na sessão");
-    // Se não tem id_usuario mas está logado, tentar pegar do array usuario
     if (isset($_SESSION['usuario']['id'])) {
         $_SESSION['id_usuario'] = $_SESSION['usuario']['id'];
         error_log("ID do usuário recuperado do array usuario: " . $_SESSION['id_usuario']);
@@ -46,22 +41,6 @@ if (!$carrinhoVazio) {
     }
 }
 
-function criarNovaConexao() {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "gamoraloja";
-
-    $novaConn = new mysqli($servername, $username, $password, $dbname);
-    
-    if ($novaConn->connect_error) {
-        throw new Exception("Falha na conexão: " . $novaConn->connect_error);
-    }
-    
-    $novaConn->set_charset("utf8");
-    
-    return $novaConn;
-}
 
 // Função para obter a imagem principal do produto
 function getImagemPrincipal($idProduto)
@@ -220,8 +199,7 @@ try {
         <div class="payment-methods">
             <h3>Método de Pagamento</h3>
             <?php
-            // Calcular total do carrinho em moedas (assumindo 1 real = 100 moedas)
-            $coinsPerReal = 100;
+            $coinsPerReal = 1; 
             $requiredCoins = ceil($valorTotal * $coinsPerReal);
             $hasSufficientCoins = $userCoins >= $requiredCoins;
             
@@ -293,7 +271,6 @@ try {
             </form>
 
             <script>
-                // Atualizar saldo de moedas em tempo real
                 function atualizarSaldoMoedas() {
                     fetch('buscar_saldo_moedas.php')
                         .then(response => response.json())
@@ -330,15 +307,11 @@ try {
                         });
                 }
                 
-                // Atualizar saldo a cada 30 segundos
                 setInterval(atualizarSaldoMoedas, 30000);
                 
-                // Script para garantir que um método de pagamento seja selecionado
                 document.getElementById('checkout-form').addEventListener('submit', function (e) {
-                    // Obter método de pagamento selecionado
                     const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
                     if (selectedMethod) {
-                        // Verificar se é pagamento com moedas e se tem saldo suficiente
                         if (selectedMethod.value === 'moedas') {
                             const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/,/g, ''));
                             const requiredCoins = <?php echo $requiredCoins; ?>;
@@ -366,7 +339,6 @@ try {
                     });
                 });
                 
-                // Monitorar mudanças no método de pagamento
                 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
                     radio.addEventListener('change', function() {
                         const finalizeBtn = document.getElementById('finalize-btn');
