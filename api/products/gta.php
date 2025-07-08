@@ -39,10 +39,10 @@ include "../navbar/GameNav.php";
             </div>
             <div class="thumbnails">
                 <img class="thumb active" src="../src/Capas/Gta/capa.jpg" onclick="changeImage('../src/Capas/Gta/capa.jpg', this)">
-                <img class="thumb" src="../src/Capas/Gta/gameplay1.jpg" onclick="changeImage('../src/Capas/Gta/gameplay1.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/Gameplay1.jpg" onclick="changeImage('../src/Capas/Gta/Gameplay1.jpg', this)">
                 <img class="thumb" src="../src/Capas/Gta/gameplay2.jpg" onclick="changeImage('../src/Capas/Gta/gameplay2.jpg', this)">
-                <img class="thumb" src="../src/Capas/Gta/gameplay3.jpg" onclick="changeImage('../src/Capas/Gta/gameplay3.jpg', this)">
-                <img class="thumb" src="../src/Capas/Gta/gameplay4.jpg" onclick="changeImage('../src/Capas/Gta/gameplay4.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/Gameplay3.jpg" onclick="changeImage('../src/Capas/Gta/Gameplay3.jpg', this)">
+                <img class="thumb" src="../src/Capas/Gta/Gameplay4.jpg" onclick="changeImage('../src/Capas/Gta/Gameplay4.jpg', this)">
             </div>
         </div>
 
