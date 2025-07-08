@@ -64,16 +64,14 @@ function getImagemPrincipal($idProduto)
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $stmt->close();
-            
             $imagePath = $row['urlImagem'];
+            $stmt->close(); 
+            
             if (!empty($imagePath) && file_exists($imagePath)) {
                 return $imagePath;
             }
-        }
-        
-        if (isset($stmt)) {
-            $stmt->close();
+        } else {
+            $stmt->close(); 
         }
         
         $sql = "SELECT imagemPrincipal FROM produtos WHERE idProduto = ? LIMIT 1";
@@ -89,28 +87,25 @@ function getImagemPrincipal($idProduto)
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $stmt->close();
-            
             $imagePath = $row['imagemPrincipal'];
+            $stmt->close(); 
+            
             if (!empty($imagePath) && file_exists($imagePath)) {
                 return $imagePath;
             }
-        }
-        
-        if (isset($stmt)) {
-            $stmt->close();
+        } else {
+            $stmt->close(); 
         }
         
     } catch (Exception $e) {
         error_log("Erro ao buscar imagem do produto $idProduto: " . $e->getMessage());
-        if (isset($stmt)) {
-            $stmt->close();
+        if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+            @$stmt->close(); 
         }
     }
 
     return 'imagens/placeholder.jpg';
 }
-
 
 
 
