@@ -31,6 +31,11 @@ if (!isset($_SESSION['id_usuario'])) {
     }
 }
 
+// Gerar token CSRF se não existir
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $carrinhoVazio = empty($_SESSION['carrinho']);
 $valorTotal = 0;
 
@@ -40,7 +45,6 @@ if (!$carrinhoVazio) {
         $valorTotal += $subtotal;
     }
 }
-
 
 function getImagemPrincipal($idProduto)
 {
@@ -123,10 +127,11 @@ function buscarSaldoMoedas($idCliente) {
         return 0;
     }
 }
-// Buscar saldo real de moedas do banco
+
+// Buscar saldo real de moedas do banco - CORREÇÃO AQUI
 $userCoins = 0;
 try {
-    $userCoins = buscarSaldoMoedas($_SESSION['id_usuario']);
+    $userCoins = buscarSaldoMoedas($_SESSION['id_usuario']); // Removido $conn
     error_log("Saldo de moedas do usuário ID " . $_SESSION['id_usuario'] . ": " . $userCoins);
 } catch (Exception $e) {
     error_log("Erro ao buscar saldo de moedas: " . $e->getMessage());
@@ -199,18 +204,18 @@ try {
             $hasSufficientCoins = $userCoins >= $requiredCoins;
             
             $paymentMethods = [
-                'Cartão de crédito',
-                'Pix', 
-                'PicPay', 
-                'Boleto', 
-                'Cripto',
-                'Moedas' 
+                'cartao-credito' => 'Cartão de crédito',
+                'pix' => 'Pix', 
+                'picpay' => 'PicPay', 
+                'boleto' => 'Boleto', 
+                'cripto' => 'Cripto',
+                'moedas' => 'Moedas' 
             ];
             
-            foreach ($paymentMethods as $index => $method) {
-                $methodId = strtolower(str_replace(' ', '-', $method));
-                $methodValue = strtolower(str_replace(' ', '-', $method));
-                $isCoinsMethod = $method === 'Moedas';
+            $index = 0;
+            foreach ($paymentMethods as $methodValue => $methodLabel) {
+                $methodId = $methodValue;
+                $isCoinsMethod = $methodValue === 'moedas';
                 $isDisabled = $isCoinsMethod && !$hasSufficientCoins;
                 $isChecked = $index === 0 && !$isDisabled;
                 
@@ -229,7 +234,7 @@ try {
                     echo "<span class='coins-icon'>🪙</span>";
                 }
                 
-                echo htmlspecialchars($method) . "</label>";
+                echo htmlspecialchars($methodLabel) . "</label>";
                 
                 // Info para pagamento com moedas
                 if ($isCoinsMethod) {
@@ -244,6 +249,7 @@ try {
                 }
                 
                 echo "</div>";
+                $index++;
             }
             
             // Mensagem de fundos insuficientes
@@ -258,14 +264,23 @@ try {
 
             <form method="POST" action="finalizar_compra.php" id="checkout-form">
                 <input type="hidden" name="idCliente" value="<?php echo isset($_SESSION['id_usuario']) ? intval($_SESSION['id_usuario']) : 0; ?>">
-                <input type="hidden" name="payment_method" id="selected_payment">
+                <input type="hidden" name="payment_method" id="selected_payment" value="">
                 <input type="hidden" name="total_valor" value="<?php echo $valorTotal; ?>">
                 <input type="hidden" name="total_moedas" value="<?php echo $requiredCoins; ?>">
-                <input type="hidden" name="csrf_token" value="<?php echo isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : ''; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <button type="submit" class="finalize-button" id="finalize-btn">Finalizar Compra</button>
             </form>
 
             <script>
+                // Definir o método de pagamento inicial
+                document.addEventListener('DOMContentLoaded', function() {
+                    const firstEnabledMethod = document.querySelector('input[name="payment_method"]:not([disabled])');
+                    if (firstEnabledMethod) {
+                        firstEnabledMethod.checked = true;
+                        document.getElementById('selected_payment').value = firstEnabledMethod.value;
+                    }
+                });
+
                 function atualizarSaldoMoedas() {
                     fetch('buscar_saldo_moedas.php')
                         .then(response => response.json())
@@ -308,7 +323,7 @@ try {
                     const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
                     if (selectedMethod) {
                         if (selectedMethod.value === 'moedas') {
-                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/,/g, ''));
+                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/[.,]/g, ''));
                             const requiredCoins = <?php echo $requiredCoins; ?>;
                             
                             if (userCoins < requiredCoins) {
@@ -319,27 +334,29 @@ try {
                         }
                         
                         document.getElementById('selected_payment').value = selectedMethod.value;
+                        
+                        // Debug - verificar se os dados estão sendo enviados
+                        console.log('Dados do formulário:', {
+                            idCliente: document.querySelector('input[name="idCliente"]').value,
+                            payment_method: document.getElementById('selected_payment').value,
+                            total_valor: document.querySelector('input[name="total_valor"]').value,
+                            total_moedas: document.querySelector('input[name="total_moedas"]').value,
+                            csrf_token: document.querySelector('input[name="csrf_token"]').value
+                        });
                     } else {
                         e.preventDefault();
                         alert('Por favor, selecione um método de pagamento.');
                         return false;
                     }
-                    
-                    // Debug - verificar se os dados estão sendo enviados
-                    console.log('Dados do formulário:', {
-                        idCliente: document.querySelector('input[name="idCliente"]').value,
-                        payment_method: document.getElementById('selected_payment').value,
-                        total_valor: document.querySelector('input[name="total_valor"]').value,
-                        total_moedas: document.querySelector('input[name="total_moedas"]').value
-                    });
                 });
                 
                 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
                     radio.addEventListener('change', function() {
                         const finalizeBtn = document.getElementById('finalize-btn');
+                        document.getElementById('selected_payment').value = this.value;
                         
                         if (this.value === 'moedas') {
-                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/,/g, ''));
+                            const userCoins = parseInt(document.getElementById('user-coins').textContent.replace(/[.,]/g, ''));
                             const requiredCoins = <?php echo $requiredCoins; ?>;
                             
                             if (userCoins < requiredCoins) {
