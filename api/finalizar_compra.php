@@ -356,17 +356,36 @@ if (isset($_POST['action']) && $_POST['action'] === 'process_coins_payment') {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     
-    $metodoPagamento = isset($_POST['payment_method']) ? $_POST['payment_method'] : 'cartao-de-credito';
+    $metodoPagamento = isset($_POST['payment_method']) && !empty($_POST['payment_method']) 
+        ? $_POST['payment_method'] 
+        : 'cartao-de-credito';
     
     $valorTotal = 0;
+    $itensValidos = [];
+    
     foreach ($_SESSION['carrinho'] as $idJogo => $item) {
-        $subtotal = $item['preco'] * $item['quantidade'];
+        if (!isset($item['preco']) || !isset($item['quantidade']) || !is_numeric($item['preco']) || !is_numeric($item['quantidade'])) {
+            error_log("Item inválido no carrinho - ID: $idJogo");
+            continue;
+        }
+        
+        $subtotal = floatval($item['preco']) * intval($item['quantidade']);
         $valorTotal += $subtotal;
+        $itensValidos[$idJogo] = $item;
     }
     
+    if (empty($itensValidos) || $valorTotal <= 0) {
+        $_SESSION['erro_compra'] = "Carrinho inválido ou vazio. Adicione itens válidos.";
+        header('Location: cart.php');
+        exit;
+    }
+    
+    $_SESSION['carrinho'] = $itensValidos;
+    
     if ($metodoPagamento === 'moedas') {
+        // Processamento com moedas (código existente)
         $coinsPerDollar = 100;
         $moedasNecessarias = ceil($valorTotal * $coinsPerDollar);
         
@@ -378,7 +397,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
             exit;
         }
         
-        $conn->begin_transaction();
+        if (!$conn->begin_transaction()) {
+            $_SESSION['erro_compra'] = 'Erro ao iniciar transação. Tente novamente.';
+            header('Location: cart.php');
+            exit;
+        }
         
         try {
             $jogosAdicionados = [];
@@ -415,7 +438,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
-            $conn->commit();
+            if (!$conn->commit()) {
+                $conn->rollback();
+                $_SESSION['erro_compra'] = 'Erro ao finalizar transação.';
+                header('Location: cart.php');
+                exit;
+            }
             
             $_SESSION['moedas_gastas'] = $moedasNecessarias;
             $_SESSION['metodo_pagamento_usado'] = 'moedas';
@@ -435,7 +463,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
         }
         
     } else {
-        $conn->begin_transaction();
+        if (!$conn->begin_transaction()) {
+            $_SESSION['erro_compra'] = 'Erro ao iniciar transação. Tente novamente.';
+            header('Location: cart.php');
+            exit;
+        }
         
         try {
             $jogosAdicionados = [];
@@ -465,6 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 exit;
             }
             
+            // Adicionar moedas de fidelidade
             $novasMoedas = ceil($valorTotal * 0.05);
             if ($novasMoedas > 0) {
                 if (adicionarMoedasFidelidade($idCliente, $novasMoedas)) {
@@ -472,7 +505,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
                 }
             }
             
-            $conn->commit();
+            // 9. CORREÇÃO: Commit da transação
+            if (!$conn->commit()) {
+                $conn->rollback();
+                $_SESSION['erro_compra'] = 'Erro ao finalizar transação.';
+                header('Location: cart.php');
+                exit;
+            }
             
             $_SESSION['metodo_pagamento_usado'] = $metodoPagamento;
             $_SESSION['compra_sucesso'] = [
@@ -489,6 +528,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['carrinho'])) {
             header('Location: cart.php');
             exit;
         }
+    }
+    
+    // 10. CORREÇÃO: Atualizar biblioteca e limpar carrinho APENAS após sucesso
+    $_SESSION['carrinho_finalizado'] = $_SESSION['carrinho'];
+    
+    if (!isset($_SESSION['biblioteca'])) {
+        $_SESSION['biblioteca'] = [];
+    }
+    
+    foreach ($_SESSION['carrinho'] as $idJogo => $item) {
+        if (!isset($_SESSION['biblioteca'][$idJogo])) {
+            $_SESSION['biblioteca'][$idJogo] = [
+                'nome' => $item['nome'],
+                'data_compra' => date('Y-m-d H:i:s'),
+                'metodo_pagamento' => $metodoPagamento
+            ];
+        }
+    }
+    
+    // Limpar carrinho
+    $_SESSION['carrinho'] = [];
+    $_SESSION['compra_finalizada'] = true;
+    
+    // 11. CORREÇÃO: Adicionar log de sucesso
+    error_log("Compra finalizada com sucesso - Cliente: $idCliente, Compra: " . $idCompra);
+    
+    header('Location: pedidos.php');
+    exit;
+    
+} else {
+    // 12. CORREÇÃO: Log para debugging
+    error_log("Redirecionamento para cart.php - REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'] . 
+              ", Carrinho vazio: " . (empty($_SESSION['carrinho']) ? 'sim' : 'não'));
+    header('Location: cart.php');
+    exit;
+}
+    
     }
     
     $_SESSION['carrinho_finalizado'] = $_SESSION['carrinho'];
