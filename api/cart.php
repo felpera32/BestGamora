@@ -65,12 +65,17 @@ function getImagemPrincipal($idProduto)
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $stmt->close();
-            return $row['urlImagem'];
+            
+            $imagePath = $row['urlImagem'];
+            if (!empty($imagePath) && file_exists($imagePath)) {
+                return $imagePath;
+            }
         }
         
-        $stmt->close();
+        if (isset($stmt)) {
+            $stmt->close();
+        }
         
-        // Fallback para a imagem do produto na tabela produtos
         $sql = "SELECT imagemPrincipal FROM produtos WHERE idProduto = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
         
@@ -85,20 +90,29 @@ function getImagemPrincipal($idProduto)
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $stmt->close();
-            return $row['imagemPrincipal'] ? $row['imagemPrincipal'] : 'imagens/placeholder.jpg';
+            
+            $imagePath = $row['imagemPrincipal'];
+            if (!empty($imagePath) && file_exists($imagePath)) {
+                return $imagePath;
+            }
         }
         
-        $stmt->close();
+        if (isset($stmt)) {
+            $stmt->close();
+        }
         
     } catch (Exception $e) {
         error_log("Erro ao buscar imagem do produto $idProduto: " . $e->getMessage());
+        if (isset($stmt)) {
+            $stmt->close();
+        }
     }
 
     return 'imagens/placeholder.jpg';
 }
 
 function buscarSaldoMoedas($idCliente) {
-    global $conn; // Usar a conexão do connect.php
+    global $conn; 
     
     try {
         $sql = "SELECT moedas FROM clientes WHERE idCliente = ?";
