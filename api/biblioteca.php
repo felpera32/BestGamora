@@ -13,16 +13,14 @@ if (!isset($_SESSION['biblioteca'])) {
 
 $bibliotecaVazia = empty($_SESSION['biblioteca']);
 
-// Configurações do banco de dados
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'gamoraloja');
+define('DB_HOST', 'mysql-gamora.alwaysdata.net');
+define('DB_USER', 'gamora');
+define('DB_PASS', 'trabalho6969*');
+define('DB_NAME', 'gamora_loja');
 
-// Função para obter a imagem principal do produto
+
 function getImagemPrincipal($idProduto) {
     try {
-        // Criar conexão específica para esta função
         $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         
         if ($mysqli->connect_error) {
@@ -31,7 +29,6 @@ function getImagemPrincipal($idProduto) {
         
         $mysqli->set_charset("utf8");
         
-        // Buscar na tabela imagensproduto primeiro
         $sql = "SELECT urlImagem FROM imagensproduto WHERE idProduto = ? AND ordemExibicao = 1 AND status = 'Ativa' LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         
@@ -50,7 +47,6 @@ function getImagemPrincipal($idProduto) {
             $stmt->close();
         }
         
-        // Fallback para tabela produtos
         $sql = "SELECT imagemPrincipal FROM produtos WHERE idProduto = ? LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         
@@ -94,7 +90,6 @@ function getImagemPrincipal($idProduto) {
             <h2>Minha Biblioteca</h2>
             <div class="nav-links">
                 <a href="biblioteca.php" class="nav-link active">Biblioteca</a>
-                <a href="lista_desejos.php" class="nav-link">Lista de desejos</a>
                 <a href="trocas.php" class="nav-link">Trocas</a>
                 <div class="user-info">
                     <span>Olá, <?php echo isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário'; ?></span>
@@ -117,7 +112,6 @@ function getImagemPrincipal($idProduto) {
         <?php else: ?>
             <div class="jogos-grid">
                 <?php foreach ($_SESSION['biblioteca'] as $id => $jogo): 
-                    // Obter a imagem do banco de dados
                     $imagePath = getImagemPrincipal($id);
                 ?>
                     <div class="jogo-card">
