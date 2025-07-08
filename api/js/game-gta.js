@@ -40,15 +40,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let images = [
-        "../src/Capas/gta/Capa.jpg",
+        "../src/Capas/Gta/Capa.jpg",
         
-        "../src/Capas/gta/gameplay1.jpg",
+        "../src/Capas/Gta/Gameplay1.jpg",
 
-        "../src/Capas/gta/gameplay2.jpg",
+        "../src/Capas/Gta/gameplay2.jpg",
 
-        "../src/Capas/gta/gameplay3.jpg",
+        "../src/Capas/Gta/Gameplay3.jpg",
 
-        "../src/Capas/gta/gameplay4.jpg"
+        "../src/Capas/Gta/Gameplay4.jpg"
     ];
 
     let currentIndex = 0;
