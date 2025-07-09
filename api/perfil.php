@@ -1,5 +1,5 @@
-
 <?php
+ob_start(); 
 session_start();
 
 require_once 'connect.php';
@@ -95,7 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -105,6 +104,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/profile2.css">
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #081f4d;
+        }
+    </style>
 </head>
 <body>
 
@@ -189,20 +193,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="button-container">
-            <button type="submit" class=="primary-button">Salvar Alterações</button>
-<a href="index.php" class="secondary-button">Cancelar</a>
-</div>
-</form>
+            <button type="submit" class="primary-button">Salvar Alterações</button>
+            <a href="index.php" class="secondary-button">Cancelar</a>
+        </div>
+    </form>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
-
-<style>
-    body {
-        background-color: #081f4d;
-    }
-</style>
-
 </body>
 </html>
+<?php
+ob_end_flush(); 
+?>
