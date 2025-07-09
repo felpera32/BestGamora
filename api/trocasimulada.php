@@ -1,3 +1,4 @@
+
 <?php
 include 'connect.php';
 
@@ -60,6 +61,12 @@ if (isset($_GET['success'])) {
             margin-bottom: 20px;
             padding: 20px;
             border-left: 4px solid #007bff;
+            transition: all 0.3s ease;
+        }
+        
+        .proposal-card.accepted {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
         }
         
         .proposal-header {
@@ -207,6 +214,47 @@ if (isset($_GET['success'])) {
             background: #c82333;
         }
         
+        .accepted-status {
+            text-align: center;
+            padding: 25px;
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            color: #155724;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .accepted-status::before {
+            content: "✓ ";
+            font-size: 24px;
+            color: #28a745;
+        }
+        
+        .trade-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .trade-summary h4 {
+            margin: 0 0 10px 0;
+            color: #28a745;
+            font-size: 16px;
+        }
+        
+        .trade-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .trade-details span {
+            font-size: 14px;
+        }
+        
         .no-proposals {
             text-align: center;
             color: #666;
@@ -270,6 +318,17 @@ if (isset($_GET['success'])) {
         .toast-notification.error::before {
             content: "⚠";
         }
+        
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -331,36 +390,38 @@ if (isset($_GET['success'])) {
                                 </div>
                             </div>
                             
-                            <div class="proposal-details">
-                                <div class="game-info">
-                                    <span class="game-name">' . htmlspecialchars($cliente['nome']) . ' oferece:</span>
-                                    <span class="game-price">R$ ' . number_format($jogo_desejado['preco'], 2, ',', '.') . '</span>
-                                </div>
-                                <div style="font-weight: bold; color: #007bff; margin-bottom: 10px;">' . htmlspecialchars($jogo_desejado['nome']) . '</div>
-                                
-                                <div class="exchange-arrow">⬇️ Em troca de ⬇️</div>
-                                
-                                <div class="game-selection">
-                                    <label for="game_select_' . $i . '">Escolha um jogo na faixa de preço permitida (±20%):</label>
-                                    <select id="game_select_' . $i . '" onchange="updateAcceptButton(' . $i . ')">
-                                        <option value="">Selecione um jogo...</option>';
+                            <div class="proposal-content">
+                                <div class="proposal-details">
+                                    <div class="game-info">
+                                        <span class="game-name">' . htmlspecialchars($cliente['nome']) . ' oferece:</span>
+                                        <span class="game-price">R$ ' . number_format($jogo_desejado['preco'], 2, ',', '.') . '</span>
+                                    </div>
+                                    <div style="font-weight: bold; color: #007bff; margin-bottom: 10px;">' . htmlspecialchars($jogo_desejado['nome']) . '</div>
+                                    
+                                    <div class="exchange-arrow">⬇️ Em troca de ⬇️</div>
+                                    
+                                    <div class="game-selection">
+                                        <label for="game_select_' . $i . '">Escolha um jogo na faixa de preço permitida (±20%):</label>
+                                        <select id="game_select_' . $i . '" onchange="updateAcceptButton(' . $i . ')">
+                                            <option value="">Selecione um jogo...</option>';
                     
                     foreach ($jogos_compativeis as $jogo_compativel) {
-                        echo '<option value="' . $jogo_compativel['idProduto'] . '" data-price="' . $jogo_compativel['preco'] . '">' 
+                        echo '<option value="' . $jogo_compativel['idProduto'] . '" data-price="' . $jogo_compativel['preco'] . '" data-name="' . htmlspecialchars($jogo_compativel['nome']) . '">' 
                              . htmlspecialchars($jogo_compativel['nome']) . ' - R$ ' 
                              . number_format($jogo_compativel['preco'], 2, ',', '.') . '</option>';
                     }
                     
                     echo '          </select>
-                                    <div class="price-range-info">
-                                        Faixa de preço: R$ ' . number_format($preco_min, 2, ',', '.') . ' - R$ ' . number_format($preco_max, 2, ',', '.') . '
+                                        <div class="price-range-info">
+                                            Faixa de preço: R$ ' . number_format($preco_min, 2, ',', '.') . ' - R$ ' . number_format($preco_max, 2, ',', '.') . '
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="proposal-actions">
-                                <button class="btn-decline" onclick="declineProposal(this)">Recusar</button>
-                                <button class="btn-accept" id="accept_btn_' . $i . '" disabled onclick="acceptTrade(' . $i . ', ' . $jogo_desejado['idProduto'] . ', \'' . htmlspecialchars($jogo_desejado['nome']) . '\', ' . $jogo_desejado['preco'] . ', \'' . htmlspecialchars($cliente['nome']) . '\')">Aceitar</button>
+                                
+                                <div class="proposal-actions">
+                                    <button class="btn-decline" onclick="declineProposal(this)">Recusar</button>
+                                    <button class="btn-accept" id="accept_btn_' . $i . '" disabled onclick="acceptTrade(' . $i . ', ' . $jogo_desejado['idProduto'] . ', \'' . htmlspecialchars($jogo_desejado['nome']) . '\', ' . $jogo_desejado['preco'] . ', \'' . htmlspecialchars($cliente['nome']) . '\')">Aceitar</button>
+                                </div>
                             </div>
                         </div>';
                 }
@@ -418,27 +479,52 @@ if (isset($_GET['success'])) {
             const selectedOption = select.options[select.selectedIndex];
             
             if (!select.value) {
-                showToast('Por favor, sel eccione um jogo para trocar.', 'error');
+                showToast('Por favor, selecione um jogo para trocar.', 'error');
                 return;
             }
             
-            const userGameId = selectedOption.value;
-            const userGameName = selectedOption.text.split(' - ')[0];
+            const userGameName = selectedOption.getAttribute('data-name');
             const userGamePrice = selectedOption.getAttribute('data-price');
             
-            document.getElementById('offeredGameId').value = offeredGameId;
-            document.getElementById('offeredGame').textContent = offeredGameName;
-            document.getElementById('offeredPrice').textContent = 'R$ ' + offeredGamePrice.toFixed(2).replace('.', ',');
-            document.getElementById('proposerName').textContent = proposerName;
-            document.getElementById('proposerNameInput').value = proposerName;
-            document.getElementById('userGame').value = userGameId;
+            const proposalCard = document.getElementById('proposal_' + proposalIndex);
+            const proposalContent = proposalCard.querySelector('.proposal-content');
             
-            document.getElementById('tradeModal').style.display = 'flex';
-        }
-        
-        function closeTradeModal() {
-            document.getElementById('tradeModal').style.display = 'none';
-            document.getElementById('tradeForm').reset();
+            proposalContent.classList.add('fade-out');
+            
+            setTimeout(() => {
+                proposalCard.classList.add('accepted');
+                
+                const acceptedContent = document.createElement('div');
+                acceptedContent.innerHTML = `
+                    <div class="accepted-status">
+                        Proposta Aceita
+                    </div>
+                    
+                    <div class="trade-summary">
+                        <h4>Resumo da Troca</h4>
+                        <div class="trade-details">
+                            <span><strong>Você recebeu:</strong></span>
+                            <span>${offeredGameName} - R$ ${parseFloat(offeredGamePrice).toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="trade-details">
+                            <span><strong>Você ofereceu:</strong></span>
+                            <span>${userGameName} - R$ ${parseFloat(userGamePrice).toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="trade-details">
+                            <span><strong>Trocado com:</strong></span>
+                            <span>${proposerName}</span>
+                        </div>
+                    </div>
+                `;
+                
+                proposalCard.removeChild(proposalContent);
+                proposalCard.appendChild(acceptedContent);
+                
+                acceptedContent.classList.add('fade-in');
+                
+                showToast('Troca realizada com sucesso!');
+                
+            }, 300);
         }
         
         function declineProposal(button) {
@@ -453,41 +539,6 @@ if (isset($_GET['success'])) {
             }, 300);
         }
         
-        document.getElementById('tradeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch('process_simulated_trade.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Troca realizada com sucesso!');
-                    closeTradeModal();
-                    
-                    const proposalCard = document.querySelector('.proposal-card');
-                    if (proposalCard) {
-                        proposalCard.remove();
-                    }
-                } else {
-                    showToast('Erro ao processar troca', 'error');
-                }
-            })
-            .catch(error => {
-                showToast('Erro ao processar troca', 'error');
-            });
-        });
-        
-        window.onclick = function(event) {
-            const modal = document.getElementById('tradeModal');
-            if (event.target === modal) {
-                closeTradeModal();
-            }
-        };
-        
         <?php if (isset($_GET['success'])): ?>
             showToast('Troca simulada realizada com sucesso!');
         <?php elseif (isset($_GET['error'])): ?>
@@ -495,4 +546,5 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
     </script>
 </body>
-</html> --- End of CSV data ---
+</html>
+
