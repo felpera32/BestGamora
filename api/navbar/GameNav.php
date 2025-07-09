@@ -163,10 +163,6 @@ $moedas = $dadosUsuario ? $dadosUsuario['moedas'] : 0;
                                 <i class="icon-orders" aria-hidden="true"></i>
                                 Meus Pedidos
                             </a>
-                            <a href="configuracoes.php" role="menuitem">
-                                <i class="icon-settings" aria-hidden="true"></i>
-                                Configurações
-                            </a>
                             <hr class="dropdown-separator">
                             <a href="logout.php" role="menuitem" class="logout-link">
                                 <i class="icon-logout" aria-hidden="true"></i>
