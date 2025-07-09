@@ -83,6 +83,77 @@ if (isset($_GET['success'])) {
         .toast-notification.error::before {
             content: "⚠";
         }
+        
+        .simulated-trade-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .simulated-trade-section h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .simulated-trade-section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        
+        .simulated-trade-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .simulated-trade-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-divider {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .section-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+        }
+        
+        .section-divider span {
+            background: white;
+            padding: 0 20px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .users-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -91,6 +162,7 @@ if (isset($_GET['success'])) {
         ?>
     
     <div class="container">
+        <h1>Sistema de Trocas</h1>
 
         <?php if (!empty($message)): ?>
             <div class="message <?php echo $message_type; ?>">
@@ -98,43 +170,58 @@ if (isset($_GET['success'])) {
             </div>
         <?php endif; ?>
         
-        <?php
-        if ($result && $result->num_rows > 0) {
-            $user_count = 0;
-            while ($row = $result->fetch_assoc()) {
-                // Não mostrar o usuário atual na lista
-                if ($row['idCliente'] == $current_user_id) {
-                    continue;
-                }
-                
-                $user_count++;
-                
-                $avatar_html = '';
-                if ($row['idCliente'] % 3 == 1) {  
-                    $avatar_html = '<div class="default-avatar">👤</div>';
-                } elseif ($row['idCliente'] % 3 == 2) {
-                    $avatar_html = '<div class="default-avatar">👨</div>';
-                } else {
-                    $avatar_html = '<div class="default-avatar">👩</div>';
-                }
-                
-                echo '<div class="user-card" onclick="openModal(' . $row['idCliente'] . ', \'' . htmlspecialchars($row['nome']) . '\')">
-                        <div class="user-avatar">' . $avatar_html . '</div>
-                        <div class="user-name">' . htmlspecialchars($row['nome']) . '</div>
-                      </div>';
-            }
+        <!-- Seção de Troca Simulada -->
+        <div class="simulated-trade-section">
+            <h2>🎮 Troca Simulada</h2>
+            <p>Receba propostas automáticas de outros jogadores e pratique o sistema de trocas!</p>
+            <a href="trocasimulada.php" class="simulated-trade-button">
+                🎯 Começar Troca Simulada
+            </a>
+        </div>
+        
+        <div class="section-divider">
+            <span>OU</span>
+        </div>
+        
+        <!-- Seção de Usuários Reais -->
+        <div class="users-section">
+            <h2>👥 Enviar Proposta para Usuários</h2>
             
-            if ($user_count == 0) {
-                echo '<div class="no-users">Nenhum outro usuário disponível para troca</div>';
+            <?php
+            if ($result && $result->num_rows > 0) {
+                $user_count = 0;
+                while ($row = $result->fetch_assoc()) {
+                    if ($row['idCliente'] == $current_user_id) {
+                        continue;
+                    }
+                    
+                    $user_count++;
+                    
+                    $avatar_html = '';
+                    if ($row['idCliente'] % 3 == 1) {  
+                        $avatar_html = '<div class="default-avatar">👤</div>';
+                    } elseif ($row['idCliente'] % 3 == 2) {
+                        $avatar_html = '<div class="default-avatar">👨</div>';
+                    } else {
+                        $avatar_html = '<div class="default-avatar">👩</div>';
+                    }
+                    
+                    echo '<div class="user-card" onclick="openModal(' . $row['idCliente'] . ', \'' . htmlspecialchars($row['nome']) . '\')">
+                            <div class="user-avatar">' . $avatar_html . '</div>
+                            <div class="user-name">' . htmlspecialchars($row['nome']) . '</div>
+                          </div>';
+                }
+                
+                if ($user_count == 0) {
+                    echo '<div class="no-users">Nenhum outro usuário disponível para troca</div>';
+                }
+            } else {
+                echo '<div class="no-users">Nenhum usuário disponível para troca</div>';
             }
-        } else {
-            echo '<div class="no-users">Nenhum usuário disponível para troca</div>';
-        }
-        ?>
-        <a href="trocasimulada.php">SimularTroca</a>
+            ?>
+        </div>
     </div>
     
-    <!-- Modal para enviar proposta -->
     <div id="proposalModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Enviar proposta para <span id="receiverName"></span></h2>
@@ -152,13 +239,11 @@ if (isset($_GET['success'])) {
                     <select id="exchangeType" name="exchange_type" required onchange="toggleCoinsField()">
                         <option value="">Selecione um jogo</option>
                         <?php
-                        // Exibir jogos do banco de dados
                         if (!empty($jogos)) {
                             foreach ($jogos as $id => $nome) {
                                 echo '<option value="jogo_' . $id . '">' . htmlspecialchars($nome) . '</option>';
                             }
                         } else {
-                            // Se não houver jogos, mostra as opções originais
                             echo '<option value="product">Produto por produto</option>';
                             echo '<option value="service">Serviço por serviço</option>';
                             echo '<option value="mixed">Produto por serviço</option>';
@@ -182,28 +267,22 @@ if (isset($_GET['success'])) {
     </div>
     
     <script>
-        // Função para mostrar notificação toast
         function showToast(message, type = 'success') {
-            // Remove qualquer toast existente
             const existingToast = document.querySelector('.toast-notification');
             if (existingToast) {
                 existingToast.remove();
             }
             
-            // Cria o novo toast
             const toast = document.createElement('div');
             toast.className = `toast-notification ${type}`;
             toast.textContent = message;
             
-            // Adiciona ao DOM
             document.body.appendChild(toast);
             
-            // Mostra o toast com animação
             setTimeout(() => {
                 toast.classList.add('show');
             }, 100);
             
-            // Remove o toast após 3 segundos
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => {
@@ -214,7 +293,6 @@ if (isset($_GET['success'])) {
             }, 3000);
         }
         
-        // Funções para manipular o modal
         function openModal(userId, userName) {
             document.getElementById('receiverId').value = userId;
             document.getElementById('receiverName').textContent = userName;
@@ -257,13 +335,11 @@ if (isset($_GET['success'])) {
                 }
             })
             .catch(error => {
-                // Em caso de erro ou se não houver resposta JSON, mostra a notificação de sucesso mesmo assim
                 showToast('Proposta de troca enviada');
                 closeModal();
             });
         });
         
-        // Fechar o modal se clicar fora dele
         window.onclick = function(event) {
             const modal = document.getElementById('proposalModal');
             if (event.target === modal) {
