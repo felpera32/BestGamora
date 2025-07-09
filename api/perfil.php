@@ -30,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $telefone = filter_input(INPUT_POST, 'telefone', FILTER_DEFAULT);
     $cpf = filter_input(INPUT_POST, 'cpf', FILTER_DEFAULT);
-}
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensagem = "Formato de e-mail inválido!";
@@ -94,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     }
+}
 
 ?>
 <!DOCTYPE html>
@@ -205,5 +205,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 <?php
-ob_end_flush(); // Envia o buffer de saída
+ob_end_flush(); 
 ?>
