@@ -52,9 +52,225 @@ if (isset($_GET['success'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Troca Simulada</title>
     <link rel="stylesheet" href="css/trade.css">
-    <link rel="stylesheet" href="css/trocasimulada.css">
-
-
+    <style>
+        .proposal-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .proposal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .proposer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .proposer-info h3 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .proposer-info p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .proposal-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .game-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .game-price {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .exchange-arrow {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 20px;
+            color: #007bff;
+        }
+        
+        .game-selection {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .game-selection label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .game-selection select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .game-selection select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .game-selection select option {
+            padding: 10px;
+        }
+        
+        .price-range-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .proposal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn-accept {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .btn-accept:hover {
+            background: #218838;
+        }
+        
+        .btn-accept:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .btn-decline {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .btn-decline:hover {
+            background: #c82333;
+        }
+        
+        .no-proposals {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #5a6268;
+        }
+        
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease-in-out;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast-notification::before {
+            content: "✓";
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .toast-notification.error {
+            background-color: #f44336;
+        }
+        
+        .toast-notification.error::before {
+            content: "⚠";
+        }
+    </style>
 </head>
 <body>
     <?php include "navbar/nav.php"; ?>
@@ -104,7 +320,9 @@ if (isset($_GET['success'])) {
                     $avatars = ['👤', '👨', '👩', '🎮', '🕹️'];
                     $avatar = $avatars[$cliente['idCliente'] % count($avatars)];
                     
-                    echo '<div class="proposal-card">
+                    $proposal_id = 'proposal_' . $i;
+                    
+                    echo '<div class="proposal-card" id="' . $proposal_id . '">
                             <div class="proposal-header">
                                 <div class="proposer-avatar">' . $avatar . '</div>
                                 <div class="proposer-info">
@@ -122,16 +340,27 @@ if (isset($_GET['success'])) {
                                 
                                 <div class="exchange-arrow">⬇️ Em troca de ⬇️</div>
                                 
-                                <div class="game-info">
-                                    <span class="game-name">Você oferece:</span>
-                                    <span class="game-price">Faixa: R$ ' . number_format($jogo_desejado['preco'] * 0.8, 2, ',', '.') . ' - R$ ' . number_format($jogo_desejado['preco'] * 1.2, 2, ',', '.') . '</span>
+                                <div class="game-selection">
+                                    <label for="game_select_' . $i . '">Escolha um jogo na faixa de preço permitida (±20%):</label>
+                                    <select id="game_select_' . $i . '" onchange="updateAcceptButton(' . $i . ')">
+                                        <option value="">Selecione um jogo...</option>';
+                    
+                    foreach ($jogos_compativeis as $jogo_compativel) {
+                        echo '<option value="' . $jogo_compativel['idProduto'] . '" data-price="' . $jogo_compativel['preco'] . '">' 
+                             . htmlspecialchars($jogo_compativel['nome']) . ' - R$ ' 
+                             . number_format($jogo_compativel['preco'], 2, ',', '.') . '</option>';
+                    }
+                    
+                    echo '          </select>
+                                    <div class="price-range-info">
+                                        Faixa de preço: R$ ' . number_format($preco_min, 2, ',', '.') . ' - R$ ' . number_format($preco_max, 2, ',', '.') . '
+                                    </div>
                                 </div>
-                                <div style="font-style: italic; color: #666;">Escolha um jogo na faixa de preço permitida (±20%)</div>
                             </div>
                             
                             <div class="proposal-actions">
                                 <button class="btn-decline" onclick="declineProposal(this)">Recusar</button>
-                                <button class="btn-accept" onclick="openTradeModal(' . $jogo_desejado['idProduto'] . ', \'' . htmlspecialchars($jogo_desejado['nome']) . '\', ' . $jogo_desejado['preco'] . ', \'' . htmlspecialchars($cliente['nome']) . '\')">Aceitar</button>
+                                <button class="btn-accept" id="accept_btn_' . $i . '" disabled onclick="acceptTrade(' . $i . ', ' . $jogo_desejado['idProduto'] . ', \'' . htmlspecialchars($jogo_desejado['nome']) . '\', ' . $jogo_desejado['preco'] . ', \'' . htmlspecialchars($cliente['nome']) . '\')">Aceitar</button>
                             </div>
                         </div>';
                 }
@@ -139,36 +368,6 @@ if (isset($_GET['success'])) {
                 echo '<div class="no-proposals">Nenhuma proposta de troca disponível no momento.</div>';
             }
             ?>
-        </div>
-    </div>
-    
-    <!-- Modal para escolher jogo para troca -->
-    <div id="tradeModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Escolha seu jogo para trocar</h2>
-            
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="font-weight: bold; margin-bottom: 10px;">Proposta de: <span id="proposerName"></span></div>
-                <div>Ele oferece: <strong id="offeredGame"></strong></div>
-                <div>Valor: <strong id="offeredPrice"></strong></div>
-            </div>
-            
-            <form id="tradeForm" method="post" action="process_simulated_trade.php">
-                <input type="hidden" id="offeredGameId" name="offered_game_id">
-                <input type="hidden" id="proposerNameInput" name="proposer_name">
-                
-                <div class="form-group">
-                    <label for="userGame">Selecione seu jogo para trocar:</label>
-                    <select id="userGame" name="user_game_id" required>
-                        <option value="">Selecione um jogo...</option>
-                    </select>
-                </div>
-                
-                <div class="button-group">
-                    <button type="button" class="btn-cancel" onclick="closeTradeModal()">Cancelar</button>
-                    <button type="submit" class="btn-submit">Confirmar Troca</button>
-                </div>
-            </form>
         </div>
     </div>
     
@@ -201,39 +400,38 @@ if (isset($_GET['success'])) {
             }, 3000);
         }
         
-        function openTradeModal(gameId, gameName, gamePrice, proposerName) {
-            document.getElementById('offeredGameId').value = gameId;
-            document.getElementById('offeredGame').textContent = gameName;
-            document.getElementById('offeredPrice').textContent = 'R$ ' + gamePrice.toFixed(2).replace('.', ',');
+        function updateAcceptButton(proposalIndex) {
+            const select = document.getElementById('game_select_' + proposalIndex);
+            const acceptBtn = document.getElementById('accept_btn_' + proposalIndex);
+            
+            if (select.value) {
+                acceptBtn.disabled = false;
+                acceptBtn.style.background = '#28a745';
+            } else {
+                acceptBtn.disabled = true;
+                acceptBtn.style.background = '#6c757d';
+            }
+        }
+        
+        function acceptTrade(proposalIndex, offeredGameId, offeredGameName, offeredGamePrice, proposerName) {
+            const select = document.getElementById('game_select_' + proposalIndex);
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (!select.value) {
+                showToast('Por favor, sel eccione um jogo para trocar.', 'error');
+                return;
+            }
+            
+            const userGameId = selectedOption.value;
+            const userGameName = selectedOption.text.split(' - ')[0];
+            const userGamePrice = selectedOption.getAttribute('data-price');
+            
+            document.getElementById('offeredGameId').value = offeredGameId;
+            document.getElementById('offeredGame').textContent = offeredGameName;
+            document.getElementById('offeredPrice').textContent = 'R$ ' + offeredGamePrice.toFixed(2).replace('.', ',');
             document.getElementById('proposerName').textContent = proposerName;
             document.getElementById('proposerNameInput').value = proposerName;
-            
-            const minPrice = gamePrice * 0.8;
-            const maxPrice = gamePrice * 1.2;
-            
-            const compatibleGames = jogos.filter(jogo => 
-                jogo.preco >= minPrice && 
-                jogo.preco <= maxPrice && 
-                jogo.idProduto != gameId
-            );
-            
-            const select = document.getElementById('userGame');
-            select.innerHTML = '<option value="">Selecione um jogo...</option>';
-            
-            compatibleGames.forEach(jogo => {
-                const option = document.createElement('option');
-                option.value = jogo.idProduto;
-                option.textContent = `${jogo.nome} - R$ ${jogo.preco.toFixed(2).replace('.', ',')}`;
-                select.appendChild(option);
-            });
-            
-            if (compatibleGames.length === 0) {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'Nenhum jogo compatível disponível';
-                option.disabled = true;
-                select.appendChild(option);
-            }
+            document.getElementById('userGame').value = userGameId;
             
             document.getElementById('tradeModal').style.display = 'flex';
         }
@@ -270,7 +468,6 @@ if (isset($_GET['success'])) {
                     showToast('Troca realizada com sucesso!');
                     closeTradeModal();
                     
-                    
                     const proposalCard = document.querySelector('.proposal-card');
                     if (proposalCard) {
                         proposalCard.remove();
@@ -280,8 +477,7 @@ if (isset($_GET['success'])) {
                 }
             })
             .catch(error => {
-                showToast('Troca realizada com sucesso!');
-                closeTradeModal();
+                showToast('Erro ao processar troca', 'error');
             });
         });
         
@@ -299,4 +495,4 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
     </script>
 </body>
-</html>
+</html> --- End of CSV data ---
