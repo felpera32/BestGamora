@@ -13,7 +13,7 @@ $idCliente = $_SESSION['usuario']['id'];
 $mensagem = "";
 $alertClass = "";
 
-$stmt = $conn->prepare("SELECT * FROM Clientes WHERE idCliente = ?");
+$stmt = $conn->prepare("SELECT * FROM Clientes WHERE idcliente = ?");
 $stmt->bind_param("i", $idCliente);
 $stmt->execute();
 $result = $stmt->get_result();
