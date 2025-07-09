@@ -31,7 +31,6 @@
                     echo '<div class="profile-dropdown">';
                     echo '<a href="perfil.php">Meu Perfil</a>';
                     echo '<a href="pedidos.php">Meus Pedidos</a>';
-                    echo '<a href="configuracoes.php">Configurações</a>';
                     echo '<a href="logout.php">Sair</a>';
                     echo '</div>';
                     echo '</div>';
