@@ -1,11 +1,12 @@
-
 <?php
 session_start();
 include 'connect.php';
+
 if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit;
 }
+
 
 $current_user_id = $_SESSION['usuario']['id']; 
 $current_user_name = $_SESSION['usuario']['nome']; 
