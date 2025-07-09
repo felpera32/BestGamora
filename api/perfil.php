@@ -1,5 +1,5 @@
 <?php
-ob_start(); // Inicia o buffer de saída para evitar problemas de headers
+ob_start(); 
 session_start();
 
 require_once 'connect.php';
@@ -26,10 +26,11 @@ if ($result->num_rows > 0) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
+    $nome = filter_input(INPUT_POST, 'nome', FILTER_DEFAULT);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $telefone = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_STRING);
-    $cpf = filter_input(INPUT_POST, 'cpf', FILTER_SANITIZE_STRING);
+    $telefone = filter_input(INPUT_POST, 'telefone', FILTER_DEFAULT);
+    $cpf = filter_input(INPUT_POST, 'cpf', FILTER_DEFAULT);
+}
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensagem = "Formato de e-mail inválido!";
