@@ -154,6 +154,8 @@ if (isset($_GET['success'])) {
             font-size: 16px;
             background: white;
             cursor: pointer;
+            idth: 100%;
+            color: black;
         }
         
         .game-selection select:focus {
