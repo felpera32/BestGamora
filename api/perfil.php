@@ -1,5 +1,5 @@
 <?php
-ob_start(); 
+ob_start(); // Inicia o buffer de saída para evitar problemas de headers
 session_start();
 
 require_once 'connect.php';
@@ -13,7 +13,7 @@ $idCliente = $_SESSION['usuario']['id'];
 $mensagem = "";
 $alertClass = "";
 
-$stmt = $conn->prepare("SELECT * FROM Clientes WHERE idcliente = ?");
+$stmt = $conn->prepare("SELECT * FROM clientes WHERE idCliente = ?");
 $stmt->bind_param("i", $idCliente);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensagem = "Formato de e-mail inválido!";
         $alertClass = "alert-danger";
     } else {
-        $stmt = $conn->prepare("SELECT idCliente FROM Clientes WHERE email = ? AND idCliente != ?");
+        $stmt = $conn->prepare("SELECT idCliente FROM clientes WHERE email = ? AND idCliente != ?");
         $stmt->bind_param("si", $email, $idCliente);
         $stmt->execute();
         $emailResult = $stmt->get_result();
@@ -67,10 +67,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (empty($mensagem)) {
                 if ($senhaAlterada) {
-                    $stmt = $conn->prepare("UPDATE Clientes SET nome = ?, email = ?, telefone = ?, cpf = ?, senha_hash = ?, ultimoAcesso = NOW() WHERE idCliente = ?");
+                    $stmt = $conn->prepare("UPDATE clientes SET nome = ?, email = ?, telefone = ?, cpf = ?, senha_hash = ?, ultimoAcesso = NOW() WHERE idCliente = ?");
                     $stmt->bind_param("sssssi", $nome, $email, $telefone, $cpf, $novaSenhaHash, $idCliente);
                 } else {
-                    $stmt = $conn->prepare("UPDATE Clientes SET nome = ?, email = ?, telefone = ?, cpf = ?, ultimoAcesso = NOW() WHERE idCliente = ?");
+                    $stmt = $conn->prepare("UPDATE clientes SET nome = ?, email = ?, telefone = ?, cpf = ?, ultimoAcesso = NOW() WHERE idCliente = ?");
                     $stmt->bind_param("ssssi", $nome, $email, $telefone, $cpf, $idCliente);
                 }
 
@@ -204,5 +204,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 <?php
-ob_end_flush(); 
+ob_end_flush(); // Envia o buffer de saída
 ?>
