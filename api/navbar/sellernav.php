@@ -14,9 +14,7 @@
 
 
             <div class="user-actions">
-                <button class="cart-button" id="cart">
-                    <span class="cart-icon">🛒</span>
-                </button>
+
 
                 <?php
                 if (isset($_SESSION['usuario'])) {
