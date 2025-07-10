@@ -6,6 +6,7 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
     header('Location: ../login.php');
     exit;
 }
+    include "../navbar/GameNav.php";
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -18,11 +19,7 @@ if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true)
 </head>
 
 <body>
-    <header>
-        <?php 
-            include "../GameNav.php";
-        ?>
-    </header>
+
 
     <div class="main-container">
         <div class="left-column">
