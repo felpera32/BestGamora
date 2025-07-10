@@ -23,8 +23,6 @@
                     echo '<div class="profile-wrapper">';
                     echo '<img src="' . htmlspecialchars($fotoPerfil) . '" alt="Perfil" class="profile-photo" id="foto-perfil">';
                     echo '<div class="profile-dropdown">';
-                    echo '<a href="perfil.php">Perfil da loja</a>';
-                    echo '<a href="Meus Produtos.php">Publicados</a>';
                     echo '<a href="navbar/logout.php">Sair</a>';
                     echo '</div>';
                     echo '</div>';
