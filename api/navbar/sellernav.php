@@ -157,17 +157,6 @@
         gap: 1rem;
     }
 
-    .cart-button {
-        background: none;
-        border: none;
-        position: relative;
-        cursor: pointer;
-        padding: 0.5rem;
-    }
-
-    .cart-icon {
-        font-size: 1.3rem;
-    }
 
 
 
