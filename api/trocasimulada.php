@@ -337,7 +337,7 @@ if (isset($_GET['success'])) {
     <?php include "navbar/nav.php"; ?>
     
     <div class="container">
-        <a href="trade.php" class="back-button">← Voltar para Trocas</a>
+        <a href="trocas.php" class="back-button">← Voltar para Trocas</a>
         
         <h1>Propostas de Troca Simuladas</h1>
         
